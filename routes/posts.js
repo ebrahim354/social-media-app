@@ -69,21 +69,12 @@ router.put('/:id/like', async (req, res, next) => {
 		next(err)
 	}
 })
-//get a post
-router.get('/:id', async (req, res, next) => {
-	try {
-		const post = await Post.findById(req.params.id)
-		if (!post) return res.status(404).send('post is not found')
-		res.status(200).json(post)
-	} catch (err) {
-		next(err)
-	}
-})
 //get timeline posts
-router.get('/timeline/:userId', async (req, res, next) => {
+router.get('/timeline', async (req, res, next) => {
+	console.log(req.body.userId)
 	try {
-		const user = await User.findById(req.params.userId)
-		const myPosts = await Post.find({ userId: req.params.userId })
+		const user = await User.findById(req.body.userId)
+		const myPosts = await Post.find({ userId: req.body.userId })
 		let timeline = myPosts
 		console.log(myPosts)
 		const usersIds = user.following
@@ -99,4 +90,14 @@ router.get('/timeline/:userId', async (req, res, next) => {
 	}
 })
 
+//get a post
+router.get('/:id', async (req, res, next) => {
+	try {
+		const post = await Post.findById(req.params.id)
+		if (!post) return res.status(404).send('post is not found')
+		res.status(200).json(post)
+	} catch (err) {
+		next(err)
+	}
+})
 module.exports = router

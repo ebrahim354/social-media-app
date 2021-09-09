@@ -17,7 +17,8 @@ const users = require('./routes/users')
 const posts = require('./routes/posts')
 const auth = require('./routes/auth')
 
-const User = require('./models/User')
+const getToken = require('./middleware/getToken')
+const { validateToken } = require('./middleware/validation')
 
 mongoose.connect(
 	db,
@@ -32,14 +33,23 @@ mongoose.connect(
 	}
 )
 
+// testing space
+// const getToken = require('./middleware/getToken')
+
+// App.get('/testing', getToken, (req, res) => {
+// 	if (req.token) res.send(req.token)
+// })
+// testing space
 App.use(express.json())
 App.use(morgan('tiny'))
 App.use(helmet())
 App.use(cors())
 
-App.use('/api/users', users)
-App.use('/api/posts', posts)
+App.use(getToken)
+
 App.use('/api/auth', auth)
+App.use('/api/users', validateToken, users)
+App.use('/api/posts', validateToken, posts)
 
 App.use(errorHandler)
 

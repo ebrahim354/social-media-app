@@ -5,7 +5,6 @@ const {
 	idValidation,
 	updatesValidation,
 	userIdValidation,
-	accessValidation,
 } = require('../middleware/validation')
 
 //get all users for testing
@@ -19,46 +18,33 @@ router.get('/all', async (req, res, next) => {
 })
 
 //update user
-router.put(
-	'/:id',
-	idValidation,
-	updatesValidation,
-	userIdValidation,
-	accessValidation,
-	async (req, res, next) => {
-		const id = req.params.id
-		const updates = req.body.updates
-		try {
-			//check for updating the password requests
-			if (updates.password) {
-				const salt = await bcrypt.genSalt(10)
-				updates.password = await bcrypt.hash(updates.password, salt)
-				console.log(updates.password)
-			}
-			const user = await User.findByIdAndUpdate(id, updates, { new: true })
-			// if (!user) return res.status(404).send('not found')
-			res.status(200).json(user)
-		} catch (err) {
-			next(err)
+router.put('/', updatesValidation, userIdValidation, async (req, res, next) => {
+	const id = req.body.userId
+	const updates = req.body.updates
+	try {
+		//check for updating the password requests
+		if (updates.password) {
+			const salt = await bcrypt.genSalt(10)
+			updates.password = await bcrypt.hash(updates.password, salt)
+			console.log(updates.password)
 		}
+		const user = await User.findByIdAndUpdate(id, updates, { new: true })
+		// if (!user) return res.status(404).send('not found')
+		res.status(200).json(user)
+	} catch (err) {
+		next(err)
 	}
-)
+})
 //delete user
-router.delete(
-	'/:id',
-	idValidation,
-	userIdValidation,
-	accessValidation,
-	async (req, res, next) => {
-		const id = req.params.id
-		try {
-			const user = await User.findByIdAndRemove(id)
-			res.status(200).send('user deleted successfully')
-		} catch (err) {
-			next(err)
-		}
+router.delete('/', userIdValidation, async (req, res, next) => {
+	const id = req.body.userId
+	try {
+		const user = await User.findByIdAndRemove(id)
+		res.status(200).send('user deleted successfully')
+	} catch (err) {
+		next(err)
 	}
-)
+})
 //get a user
 router.get('/:id', async (req, res, next) => {
 	const id = req.params.id

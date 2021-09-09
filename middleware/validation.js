@@ -1,3 +1,5 @@
+const verifyToken = require('../utils/verifyToken')
+
 const idValidation = (req, res, next) => {
 	if (!req.params.id) {
 		const error = new Error('cant fined id parameter')
@@ -22,14 +24,6 @@ const userIdValidation = (req, res, next) => {
 	}
 	next()
 }
-const accessValidation = (req, res, next) => {
-	if (req.body.userId !== req.params.id) {
-		const error = new Error('you can access your account only')
-		error.name = 'AuthorizationError'
-		next(error)
-	}
-	next()
-}
 const containsDesc = (req, res, next) => {
 	if (!req.body.description) {
 		const error = new Error('invalid post')
@@ -38,11 +32,23 @@ const containsDesc = (req, res, next) => {
 	}
 	next()
 }
+// catches if the token is expires or false for the protected routs
+const validateToken = (req, res, next) => {
+	// assuming getToken is used before this and req.token is a defined string
+	try {
+		const payload = verifyToken(req.token, true)
+		console.log(payload)
+		req.body.userId = payload.sub
+	} catch (err) {
+		next(err)
+	}
+	next()
+}
 
 module.exports = {
 	idValidation,
-	accessValidation,
 	userIdValidation,
 	updatesValidation,
 	containsDesc,
+	validateToken,
 }
