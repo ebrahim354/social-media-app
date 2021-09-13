@@ -10,7 +10,7 @@ const verifyToken = (token, catchErr) => {
 		payload = jwt.verify(token, publicKey)
 	} catch (err) {
 		if (catchErr) {
-			console.log(err)
+			console.log(token)
 			throw err
 		}
 	}

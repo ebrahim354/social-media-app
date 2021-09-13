@@ -58,19 +58,21 @@ router.put('/:id/like', async (req, res, next) => {
 			await post.updateOne({
 				likes: post.likes.concat(req.body.userId),
 			})
-			res.status(200).send('you liked the post')
+			// true means that the user hasn't liked the post and he just liked it
+			res.status(200).send(true)
 		} else {
 			await post.updateOne({
 				likes: post.likes.filter(i => i !== req.body.userId),
 			})
-			res.status(200).send('you unliked the post')
+			// false means that the user unliked the post
+			res.status(200).send(false)
 		}
 	} catch (err) {
 		next(err)
 	}
 })
-//get timeline posts
-router.get('/timeline', async (req, res, next) => {
+//gets timeline posts
+router.get('/', async (req, res, next) => {
 	console.log(req.body.userId)
 	try {
 		const user = await User.findById(req.body.userId)

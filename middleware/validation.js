@@ -32,12 +32,12 @@ const containsDesc = (req, res, next) => {
 	}
 	next()
 }
-// catches if the token is expires or false for the protected routs
+// catches if the token is expired or false for the protected routs
 const validateToken = (req, res, next) => {
 	// assuming getToken is used before this and req.token is a defined string
 	try {
 		const payload = verifyToken(req.token, true)
-		console.log(payload)
+		console.log(`payload: ${payload.sub}`)
 		req.body.userId = payload.sub
 	} catch (err) {
 		next(err)

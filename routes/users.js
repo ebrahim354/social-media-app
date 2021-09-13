@@ -17,6 +17,22 @@ router.get('/all', async (req, res, next) => {
 	}
 })
 
+//get the user on the token (data for login)
+router.get('/', async (req, res, next) => {
+	const id = req.body.userId
+	console.log(id)
+	try {
+		const user = await User.findById(id)
+		if (!user) {
+			return res.status(404).send('user not found')
+		}
+		const { password, updatedAt, ...other } = user._doc
+		res.status(200).json(other)
+	} catch (err) {
+		next(err)
+	}
+})
+
 //update user
 router.put('/', updatesValidation, userIdValidation, async (req, res, next) => {
 	const id = req.body.userId
