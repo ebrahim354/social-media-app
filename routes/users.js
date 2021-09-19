@@ -23,11 +23,19 @@ router.get('/', async (req, res, next) => {
 	console.log(id)
 	try {
 		const user = await User.findById(id)
+			.populate('following', {
+				username: 1,
+				profilePicture: 1,
+			})
+			.populate('followers', {
+				username: 1,
+				profilePicture: 1,
+			})
 		if (!user) {
 			return res.status(404).send('user not found')
 		}
-		const { password, updatedAt, ...other } = user._doc
-		res.status(200).json(other)
+		// const { password, updatedAt, ...other } = user._doc
+		res.status(200).json(user.toJSON())
 	} catch (err) {
 		next(err)
 	}
@@ -46,7 +54,7 @@ router.put('/', updatesValidation, userIdValidation, async (req, res, next) => {
 		}
 		const user = await User.findByIdAndUpdate(id, updates, { new: true })
 		// if (!user) return res.status(404).send('not found')
-		res.status(200).json(user)
+		res.status(200).json(user.toJSON())
 	} catch (err) {
 		next(err)
 	}
@@ -69,14 +77,14 @@ router.get('/:id', async (req, res, next) => {
 		if (!user) {
 			return res.status(404).send('user not found')
 		}
-		const { password, updatedAt, ...other } = user._doc
-		res.status(200).json(other)
+		// const { password, updatedAt, ...other } = user._doc
+		res.status(200).json(user.toJSON())
 	} catch (err) {
 		next(err)
 	}
 })
-//follow a user
 
+//follow a user
 router.put(
 	'/:id/follow',
 	idValidation,
@@ -111,7 +119,6 @@ router.put(
 )
 
 //unfollow a user
-
 router.put(
 	'/:id/unfollow',
 	idValidation,

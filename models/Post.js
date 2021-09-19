@@ -1,9 +1,9 @@
 const mongoose = require('mongoose')
-
-const PostSchema = new mongoose.Schema(
+const postSchema = new mongoose.Schema(
 	{
-		userId: {
+		author: {
 			type: String,
+			ref: 'User',
 			required: true,
 		},
 		description: {
@@ -23,4 +23,15 @@ const PostSchema = new mongoose.Schema(
 	}
 )
 
-module.exports = mongoose.model('Post', PostSchema)
+postSchema.set('toJSON', {
+	transform: (object, returnedObject) => {
+		returnedObject.id = object._id.toString()
+		delete returnedObject._id
+		delete returnedObject.__v
+		// will be changed if you added the functionality of edit log or something
+		// or for checking if the post has been updated or not on the client side for example
+		delete returnedObject.updatedAt
+	},
+})
+
+module.exports = mongoose.model('Post', postSchema)

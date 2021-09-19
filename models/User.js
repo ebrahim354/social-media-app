@@ -28,14 +28,18 @@ const UserSchema = new mongoose.Schema(
 			type: String,
 			default: '',
 		},
-		followers: {
-			type: Array,
-			dafault: [],
-		},
-		following: {
-			type: Array,
-			default: [],
-		},
+		followers: [
+			{
+				type: String,
+				ref: 'User',
+			},
+		],
+		following: [
+			{
+				type: String,
+				ref: 'User',
+			},
+		],
 		isAdmin: {
 			type: Boolean,
 			default: false,
@@ -62,5 +66,16 @@ const UserSchema = new mongoose.Schema(
 		timestamps: true,
 	}
 )
+
+UserSchema.set('toJSON', {
+	transform: (object, returnedObject) => {
+		returnedObject.id = object._id.toString()
+		delete returnedObject._id
+		delete returnedObject.__v
+		delete returnedObject.password
+		delete returnedObject.createdAt
+		delete returnedObject.updatedAt
+	},
+})
 
 module.exports = mongoose.model('User', UserSchema)

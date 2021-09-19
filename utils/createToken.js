@@ -12,7 +12,7 @@ const createToken = (id, expiresIn) => {
 			sub: id,
 		},
 		privateKey,
-		{ algorithm: 'RS256', expiresIn: expiresIn ? expiresIn : 60 * 15 }
+		{ algorithm: 'RS256', expiresIn: expiresIn ? expiresIn : 5 * 15 * 4 * 24 }
 	)
 	return token
 }
