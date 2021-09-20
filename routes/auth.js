@@ -34,7 +34,7 @@ router.post('/register', async (req, res, next) => {
 		const dbUser = await newUser.save()
 		const token = createToken(dbUser._id)
 		res.status(200).json({
-			user: dbUser,
+			user: dbUser.toJSON(),
 			token,
 		})
 	} catch (err) {

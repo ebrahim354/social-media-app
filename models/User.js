@@ -22,19 +22,19 @@ const UserSchema = new mongoose.Schema(
 		},
 		profilePicture: {
 			type: String,
-			default: '',
+			default: '/public/person/noAvatar.png',
 		},
 		coverPicture: {
 			type: String,
-			default: '',
+			default: '/public/person/noCover.png',
 		},
-		followers: [
+		friends: [
 			{
 				type: String,
 				ref: 'User',
 			},
 		],
-		following: [
+		friendRequests: [
 			{
 				type: String,
 				ref: 'User',

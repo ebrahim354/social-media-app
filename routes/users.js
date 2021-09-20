@@ -23,11 +23,11 @@ router.get('/', async (req, res, next) => {
 	console.log(id)
 	try {
 		const user = await User.findById(id)
-			.populate('following', {
+			.populate('friendRequests', {
 				username: 1,
 				profilePicture: 1,
 			})
-			.populate('followers', {
+			.populate('friends', {
 				username: 1,
 				profilePicture: 1,
 			})
@@ -78,49 +78,95 @@ router.get('/:id', async (req, res, next) => {
 			return res.status(404).send('user not found')
 		}
 		// const { password, updatedAt, ...other } = user._doc
+		// you don't need that information
+		delete user.friendRequests
 		res.status(200).json(user.toJSON())
 	} catch (err) {
 		next(err)
 	}
 })
 
-//follow a user
+// accept a friend request
+router.put('/acceptFriendRequest/:id', async (req, res, next) => {
+	const userId = req.body.userId
+	const id = req.params.id
+	if (userId === id)
+		return res
+			.status(403)
+			.send("you can't accept friend requests form yourself")
+
+	try {
+		const user = await User.findById(userId)
+		const requester = await User.findById(id)
+
+		if (!(user && requester)) return res.status(403).send('invalid ids')
+
+		if (!user.friendRequests.includes(id))
+			return res
+				.status(403)
+				.send("you can't accept friend request from this user")
+
+		await user.updateOne({
+			friendRequests: user.friendRequests.filter(i => i !== id),
+			friends: user.friends.concat(id),
+		})
+
+		await requester.updateOne({
+			friends: requester.friends.concat(userId),
+		})
+		res.status(200).send('friend request accepted')
+	} catch (err) {
+		next(err)
+	}
+})
+
+// send / delete friend request to a user
 router.put(
-	'/:id/follow',
+	'/friendRequest/:id',
 	idValidation,
 	userIdValidation,
 	async (req, res, next) => {
 		const id = req.params.id
 		const userId = req.body.userId
 
+		console.log(userId)
 		if (id === userId)
-			return res.status(403).send("you can't follow yourself :(")
+			return res
+				.status(403)
+				.send("you can't send friend request to yourself :(")
 
 		try {
-			const follower = await User.findById(userId)
-			const followee = await User.findById(id)
+			const sender = await User.findById(userId)
+			const receiver = await User.findById(id)
 
-			if (!(follower && followee)) return res.status(400).send('invalid ids')
+			if (!(sender && receiver)) {
+				console.log('invalid ids')
+				return res.status(400).send('invalid ids')
+			}
 
-			if (follower.following.includes(id))
-				return res.status(403).send('you are already following this user')
+			if (sender.friends.includes(id))
+				return res.status(403).send('you are already friends')
 
-			await followee.updateOne({
-				followers: followee.followers.concat(userId),
-			})
-			await follower.updateOne({
-				following: follower.following.concat(id),
-			})
-			res.status(200).send('followed successfully')
+			if (!receiver.friendRequests.includes(userId)) {
+				await receiver.updateOne({
+					friendRequests: receiver.friendRequests.concat(userId),
+				})
+				res.status(200).send('friend request has been sent')
+			} else {
+				await receiver.updateOne({
+					friendRequests: receiver.friendRequests.filter(i => i !== userId),
+				})
+				res.status(200).send('friend request is removed')
+			}
 		} catch (err) {
 			next(err)
 		}
 	}
 )
 
-//unfollow a user
+//unfriend a user
 router.put(
-	'/:id/unfollow',
+	'/unfriend/:id',
 	idValidation,
 	userIdValidation,
 	async (req, res, next) => {
@@ -128,24 +174,25 @@ router.put(
 		const userId = req.body.userId
 
 		if (id === userId)
-			return res.status(403).send("you can't unfollow yourself :(")
+			return res.status(403).send("you can't unfriend yourself :(")
 
 		try {
-			const follower = await User.findById(userId)
-			const followee = await User.findById(id)
+			const sender = await User.findById(userId)
+			const receiver = await User.findById(id)
 
-			if (!(follower && followee)) return res.status(400).send('invalid ids')
+			if (!(sender && receiver)) return res.status(400).send('invalid ids')
 
-			if (!follower.following.includes(id))
-				return res.status(403).send("you can't unfollow this user")
+			if (!receiver.friends.includes(userId)) {
+				return res.status(403).send("you can't unfriend this user")
+			}
 
-			await followee.updateOne({
-				followers: followee.followers.filter(f => f !== userId),
+			await receiver.updateOne({
+				friends: receiver.friends.filter(f => f !== userId),
 			})
-			await follower.updateOne({
-				following: follower.following.filter(f => f !== id),
+			await sender.updateOne({
+				friends: sender.friends.filter(f => f !== id),
 			})
-			res.status(200).send('unfollowed successfully')
+			res.status(200).send('unfriended successfully')
 		} catch (err) {
 			next(err)
 		}

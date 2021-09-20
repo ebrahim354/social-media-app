@@ -144,8 +144,7 @@ router.get('/', async (req, res, next) => {
 		// })
 		let timeline = myPosts
 		console.log(myPosts)
-		const usersIds = user.following
-		for (let id of usersIds) {
+		for (let id of user.friends) {
 			console.log('start searching for posts')
 			const posts = await Post.find({ author: id }).populate('author', {
 				username: 1,
@@ -161,7 +160,6 @@ router.get('/', async (req, res, next) => {
 					}
 				})
 			)
-			console.log('concated the found posts')
 		}
 		res.status(200).json(timeline)
 	} catch (err) {
