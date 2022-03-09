@@ -1,81 +1,53 @@
-const mongoose = require('mongoose')
+const { query } = require('../db')
 
-const UserSchema = new mongoose.Schema(
-	{
-		username: {
-			type: String,
-			required: true,
-			unique: true,
-			min: 3,
-			max: 20,
-		},
-		email: {
-			type: String,
-			required: true,
-			unique: true,
-			max: 50,
-		},
-		password: {
-			type: String,
-			required: true,
-			max: 30,
-		},
-		profilePicture: {
-			type: String,
-			default: '/public/person/noAvatar.png',
-		},
-		coverPicture: {
-			type: String,
-			default: '/public/person/noCover.png',
-		},
-		friends: [
-			{
-				type: String,
-				ref: 'User',
-			},
-		],
-		friendRequests: [
-			{
-				type: String,
-				ref: 'User',
-			},
-		],
-		isAdmin: {
-			type: Boolean,
-			default: false,
-		},
-		desc: {
-			type: String,
-			min: 8,
-			max: 256,
-		},
-		city: {
-			type: String,
-			max: 50,
-		},
-		from: {
-			type: String,
-			max: 50,
-		},
-		relationship: {
-			type: Number,
-			enum: [1, 2, 3],
-		},
-	},
-	{
-		timestamps: true,
-	}
-)
+// users schema
+const users_columns = [
+	'id BIGSERIAL PRIMARY KEY',
+	'username VARCHAR(20) UNIQUE NOT NULL',
+	'email VARCHAR(50) UNIQUE NOT NULL',
+	'password text NOT NULL',
+	'profile_picture text',
+	'cover_picture text',
+	'"desc" VARCHAR(256)',
+	'city VARCHAR(50)',
+	'"from" VARCHAR(50)',
+	'relationship INT',
+	'created_at TIMESTAMP NOT NULL default now()',
+	'updated_at TIMESTAMP NOT NULL default now()',
+]
 
-UserSchema.set('toJSON', {
-	transform: (object, returnedObject) => {
-		returnedObject.id = object._id.toString()
-		delete returnedObject._id
-		delete returnedObject.__v
-		delete returnedObject.password
-		delete returnedObject.createdAt
-		delete returnedObject.updatedAt
-	},
-})
+// friendship schema
+const friendship_columns = [
+	'user1_id INT REFERENCES users(id)',
+	'user2_id INT REFERENCES users(id)',
+	'PRIMARY KEY (user1_id, user2_id)',
+	'created_at timestamp not null default now()',
+]
 
-module.exports = mongoose.model('User', UserSchema)
+// friend_request schema
+const friend_request_columns = [
+	'sender INT REFERENCES users(id)',
+	'receiver INT REFERENCES users(id)',
+	'PRIMARY KEY (sender, receiver)',
+	'created_at timestamp not null default now()',
+]
+
+const createUsersTable = () => {
+	return query(`CREATE TABLE users(${users_columns.join(',')});`)
+}
+
+const createFiendshipTable = () => {
+	return query(`CREATE TABLE friendship(${friendship_columns.join(',')});`)
+}
+
+const createFriendRequetsTable = () => {
+	return query(
+		`CREATE TABLE friend_request(${friend_request_columns.join(',')});`
+	)
+}
+
+module.exports = {
+	createUsersTable,
+	createFiendshipTable,
+	createFriendRequetsTable,
+}

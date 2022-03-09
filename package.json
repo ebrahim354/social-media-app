@@ -5,7 +5,13 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "test": "NODE_ENV=test jest --verbose --runInBand"
+    "test": "NODE_ENV=test jest --verbose --runInBand",
+    "test:auth": "NODE_ENV=test jest ./tests/auth.test.js --verbose --runInBand",
+    "test:posts": "NODE_ENV=test jest ./tests/posts.test.js --verbose --runInBand",
+    "test:users": "NODE_ENV=test jest ./tests/users.test.js --verbose --runInBand",
+    "test:friends": "NODE_ENV=test jest ./tests/friends.test.js --verbose --runInBand",
+    "initDB": "node ./models/init.js",
+    "destroyDB": "node ./models/destroy.js"
   },
   "author": "",
   "license": "ISC",
@@ -24,6 +30,7 @@
     "nodemon": "^2.0.7",
     "passport": "^0.4.1",
     "path": "^0.12.7",
+    "pg": "^8.7.1",
     "socket.io": "^4.2.0"
   },
   "devDependencies": {

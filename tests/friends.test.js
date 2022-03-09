@@ -1,45 +1,44 @@
-const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../App')
-const User = require('../models/User')
+const { pool, query } = require('../db')
 const api = supertest(app)
 
-;(async () => {
-	await User.deleteMany({})
-})()
+let user1token = null
+let user2token = null
+let user1 = null
+let user2 = null
+beforeAll(async () => {
+	await query('delete from friendship')
+	await query('delete from friend_request')
+	await query('delete from users')
+	const data1 = await api
+		.post('/api/auth/register')
+		.send({
+			username: 'user1',
+			password: '1',
+			email: 'user1@gmail.com',
+		})
+		.expect(200)
+	const data2 = await api
+		.post('/api/auth/register')
+		.send({
+			username: 'user2',
+			password: '2',
+			email: 'user2@gmail.com',
+		})
+		.expect(200)
+	expect(data1.body.user).toBeDefined()
+	expect(data1.body.token).toBeDefined()
+	user1token = data1.body.token
+	user1 = data1.body.user
+
+	expect(data2.body.user).toBeDefined()
+	expect(data2.body.token).toBeDefined()
+	user2token = data2.body.token
+	user2 = data2.body.user
+})
+
 describe('testing friend request functionality', () => {
-	let user1token = null
-	let user2token = null
-	let user1 = null
-	let user2 = null
-	test('we can register a new user and get a valid token to enter any route', async () => {
-		const data1 = await api
-			.post('/api/auth/register')
-			.send({
-				username: 'user1',
-				password: '1',
-				email: 'user1@gmail.com',
-			})
-			.expect(200)
-		const data2 = await api
-			.post('/api/auth/register')
-			.send({
-				username: 'user2',
-				password: '2',
-				email: 'user2@gmail.com',
-			})
-			.expect(200)
-		expect(data1.body.user).toBeDefined()
-		expect(data1.body.token).toBeDefined()
-		user1token = data1.body.token
-		user1 = data1.body.user
-
-		expect(data2.body.user).toBeDefined()
-		expect(data2.body.token).toBeDefined()
-		user2token = data2.body.token
-		user2 = data2.body.user
-	})
-
 	test('user1 can send a friend request to user2', async () => {
 		const res = await api
 			.put(`/api/users/friendRequest/${user2.id}`)
@@ -88,23 +87,23 @@ describe('testing friend request functionality', () => {
 		expect(res2.text).toBe('friend request accepted')
 	})
 
-	test('user2 can unfriend user1 once', async () => {
-		const res = await api
-			.put(`/api/users/unfriend/${user1.id}`)
-			.auth(user2token, {
-				type: 'bearer',
-			})
-		expect(res.text).toBe('unfriended successfully')
+	// test('user2 can unfriend user1 once', async () => {
+	// 	const res = await api
+	// 		.put(`/api/users/unfriend/${user1.id}`)
+	// 		.auth(user2token, {
+	// 			type: 'bearer',
+	// 		})
+	// 	expect(res.text).toBe('unfriended successfully')
 
-		const res2 = await api
-			.put(`/api/users/unfriend/${user1.id}`)
-			.auth(user2token, {
-				type: 'bearer',
-			})
-			.expect(403)
-		expect(res2.text).toBe("you can't unfriend this user")
-	})
+	// 	const res2 = await api
+	// 		.put(`/api/users/unfriend/${user1.id}`)
+	// 		.auth(user2token, {
+	// 			type: 'bearer',
+	// 		})
+	// 		.expect(403)
+	// 	expect(res2.text).toBe("you can't unfriend this user")
+	// })
 })
-afterAll(() => {
-	mongoose.connection.close()
+afterAll(async () => {
+	await pool.end()
 })

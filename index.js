@@ -5,5 +5,5 @@ const http = require('http')
 const server = http.createServer(App)
 
 server.listen(PORT, () => {
-	console.log(`listening on port ${port}`)
+	console.log(`listening on port ${PORT}`)
 })

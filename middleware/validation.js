@@ -71,9 +71,10 @@ const validateToken = (req, res, next) => {
 	// assuming getToken is used before this and req.token is a defined string
 	try {
 		const payload = verifyToken(req.token, true)
-		console.log(`payload: ${payload.sub}`)
+		// console.log(`payload: ${payload.sub}`)
 		req.body.userId = payload.sub
 	} catch (err) {
+		// console.log(err)
 		next(err)
 	}
 	next()
