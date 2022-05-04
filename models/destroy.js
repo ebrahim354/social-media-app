@@ -1,4 +1,4 @@
-const { query, pool } = require('../db')
+const { query, pool } = require('../db');
 
 const destroy = async () => {
 	const tables = [
@@ -8,20 +8,24 @@ const destroy = async () => {
 		'comments',
 		'post_likes',
 		'posts',
+		'messages',
+		'users_conversations',
+		'conversations',
 		'users',
-	]
+	];
 
 	for (let table of tables) {
 		try {
-			await query(`drop table ${table};`)
+			await query(`drop table if exists ${table};`);
 		} catch (err) {
-			console.log('error!')
+			console.log(err);
+			console.log('error!');
 		}
-		console.log('dropped table: ', table)
+		console.log('dropped table: ', table);
 	}
-	await pool.end()
-}
+	await pool.end();
+};
 
-destroy()
+destroy();
 
-module.exports = destroy
+module.exports = destroy;

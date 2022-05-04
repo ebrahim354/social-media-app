@@ -11,6 +11,19 @@ left join friend_request f2 on u1.id = f2.receiver
 left join users u3 on f2.sender = u3.id
 group by u1.id;
 
+
+-- joined conversation query
+select c.*,
+array_agg(
+  json_build_object
+  ('author',m.author_id, 'content', m.content, 'createdAt', m.created_at, 'updatedAt', updated_at)
+) messages
+from conversations c
+join messages m on c.id = m.conversation_id
+where c.user1_id = 1 or c.user2_id = 1
+group by c.id
+
+
 -- joined post query
 select p.*, json_build_object('id', author.id,'username', author.username, 'profilePicture', author.profile_picture) as user,
 coalesce (array_agg(json_build_object('id', u.id,'username', u.username, 'profilePicture', u.profile_picture)) 

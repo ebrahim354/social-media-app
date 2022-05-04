@@ -1,4 +1,4 @@
-const { query } = require('../db')
+const { query } = require('../db');
 
 // users schema
 const users_columns = [
@@ -14,40 +14,41 @@ const users_columns = [
 	'relationship INT',
 	'created_at TIMESTAMP NOT NULL default now()',
 	'updated_at TIMESTAMP NOT NULL default now()',
-]
+	'last_visit TIMESTAMP default now()',
+];
 
 // friendship schema
 const friendship_columns = [
-	'user1_id INT REFERENCES users(id)',
-	'user2_id INT REFERENCES users(id)',
+	'user1_id INT REFERENCES users(id) ON DELETE CASCADE',
+	'user2_id INT REFERENCES users(id) ON DELETE CASCADE',
 	'PRIMARY KEY (user1_id, user2_id)',
 	'created_at timestamp not null default now()',
-]
+];
 
 // friend_request schema
 const friend_request_columns = [
-	'sender INT REFERENCES users(id)',
-	'receiver INT REFERENCES users(id)',
+	'sender INT REFERENCES users(id) ON DELETE CASCADE',
+	'receiver INT REFERENCES users(id) ON DELETE CASCADE',
 	'PRIMARY KEY (sender, receiver)',
 	'created_at timestamp not null default now()',
-]
+];
 
 const createUsersTable = () => {
-	return query(`CREATE TABLE users(${users_columns.join(',')});`)
-}
+	return query(`CREATE TABLE users(${users_columns.join(',')});`);
+};
 
 const createFiendshipTable = () => {
-	return query(`CREATE TABLE friendship(${friendship_columns.join(',')});`)
-}
+	return query(`CREATE TABLE friendship(${friendship_columns.join(',')});`);
+};
 
 const createFriendRequetsTable = () => {
 	return query(
 		`CREATE TABLE friend_request(${friend_request_columns.join(',')});`
-	)
-}
+	);
+};
 
 module.exports = {
 	createUsersTable,
 	createFiendshipTable,
 	createFriendRequetsTable,
-}
+};

@@ -1,12 +1,12 @@
-const App = require('../App')
-const supertest = require('supertest')
-const { pool, query } = require('../db')
-const api = supertest(App)
+const App = require('../App');
+const supertest = require('supertest');
+const { pool, query } = require('../db');
+const api = supertest(App);
 
-let token1 = null
-let token2 = null
-let user1 = null
-let user2 = null
+let token1 = null;
+let token2 = null;
+let user1 = null;
+let user2 = null;
 beforeAll(async () => {
 	// const data = await api
 	// 	.post('/api/auth/login')
@@ -17,33 +17,37 @@ beforeAll(async () => {
 	// 	.expect(200)
 	// token1 = data.body.token
 
-	query('delete from users')
-	const data1 = await api
-		.post('/api/auth/register')
-		.send({
-			username: 'user1',
-			password: '1',
-			email: 'user1@gmail.com',
-		})
-		.expect(200)
-	const data2 = await api
-		.post('/api/auth/register')
-		.send({
-			username: 'user2',
-			password: '2',
-			email: 'user2@gmail.com',
-		})
-		.expect(200)
-	expect(data1.body.user).toBeDefined()
-	expect(data1.body.token).toBeDefined()
-	token1 = data1.body.token
-	user1 = data1.body.user
+	try {
+		query('delete from users');
+		const data1 = await api
+			.post('/api/auth/register')
+			.send({
+				username: 'user1',
+				password: '1',
+				email: 'user1@gmail.com',
+			})
+			.expect(200);
+		const data2 = await api
+			.post('/api/auth/register')
+			.send({
+				username: 'user2',
+				password: '2',
+				email: 'user2@gmail.com',
+			})
+			.expect(200);
+		expect(data1.body.user).toBeDefined();
+		expect(data1.body.token).toBeDefined();
+		token1 = data1.body.token;
+		user1 = data1.body.user;
 
-	expect(data2.body.user).toBeDefined()
-	expect(data2.body.token).toBeDefined()
-	token2 = data2.body.token
-	user2 = data2.body.user
-})
+		expect(data2.body.user).toBeDefined();
+		expect(data2.body.token).toBeDefined();
+		token2 = data2.body.token;
+		user2 = data2.body.user;
+	} catch (err) {
+		console.log('initialization error: ', err);
+	}
+});
 
 test('get the user on the token', async () => {
 	const user = await api
@@ -51,10 +55,10 @@ test('get the user on the token', async () => {
 		.auth(token1, {
 			type: 'bearer',
 		})
-		.expect(200)
+		.expect(200);
 
-	expect(user).toBeDefined()
-})
+	expect(user).toBeDefined();
+});
 
 test('update the user with correct data (including the password)', async () => {
 	const user = await api
@@ -69,10 +73,10 @@ test('update the user with correct data (including the password)', async () => {
 				desc: 'I love to edit sql tables via testing libraries :) ',
 			},
 		})
-		.expect(200)
+		.expect(200);
 
-	expect(user).toBeDefined()
-})
+	expect(user).toBeDefined();
+});
 
 test('update the user with wrong data and trying to update the id', async () => {
 	const user = await api
@@ -87,9 +91,9 @@ test('update the user with wrong data and trying to update the id', async () => 
 				yo: 2,
 			},
 		})
-		.expect(400)
-	expect(user.body).toEqual({})
-})
+		.expect(400);
+	expect(user.body).toEqual({});
+});
 
 test('get some user with his id', async () => {
 	const res = await api
@@ -97,10 +101,10 @@ test('get some user with his id', async () => {
 		.auth(token1, {
 			type: 'bearer',
 		})
-		.expect(200)
-	expect(res.body).toBeDefined()
-	console.log('tests: ', res.body)
-})
+		.expect(200);
+	expect(res.body).toBeDefined();
+	console.log('tests: ', res.body);
+});
 
 test('delete the current user', async () => {
 	const res = await api
@@ -108,9 +112,9 @@ test('delete the current user', async () => {
 		.auth(token1, {
 			type: 'bearer',
 		})
-		.expect(200)
-	expect(res.text).toEqual('user deleted successfully')
-})
+		.expect(200);
+	expect(res.text).toEqual('user deleted successfully');
+});
 afterAll(async () => {
-	await pool.end()
-})
+	await pool.end();
+});

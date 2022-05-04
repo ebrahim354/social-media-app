@@ -1,4 +1,4 @@
-const { Pool } = require('pg')
+const { Pool } = require('pg');
 
 const pool = new Pool({
 	user: 'postgres',
@@ -6,9 +6,9 @@ const pool = new Pool({
 	host: 'localhost',
 	database: 'social_media',
 	port: 5432,
-})
+});
 
 module.exports = {
 	query: (text, params) => pool.query(text, params),
 	pool: pool,
-}
+};
