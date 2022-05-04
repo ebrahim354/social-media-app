@@ -1,14 +1,11 @@
 const router = require('express').Router();
 const { userIdValidation, validatePost } = require('../middleware/validation');
-const { objectToParams } = require('../utils/dynamicSql');
 
 const multer = require('multer');
-const { query, pool } = require('../db');
 const {
 	createPost,
 	updatePost,
 	toggleLike,
-	getFullPost,
 	getOnePost,
 	getUserPosts,
 	getTimeLine,

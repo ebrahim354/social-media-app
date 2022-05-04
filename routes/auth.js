@@ -2,7 +2,6 @@ const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const loggedIn = require('../utils/loggedIn');
 const createToken = require('../utils/createToken');
-const { query } = require('../db');
 const { userExists, insertUser, getFullUser } = require('../db/userService');
 
 //register
