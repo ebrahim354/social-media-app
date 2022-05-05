@@ -3,15 +3,18 @@ const { query, pool } = require('../db');
 const destroy = async () => {
 	const tables = [
 		'friendship',
+		'notifications_users',
 		'friend_request',
+		'users_conversations',
+		'posts_subscribers',
 		'comment_likes',
 		'comments',
 		'post_likes',
 		'posts',
 		'messages',
-		'users_conversations',
 		'conversations',
 		'users',
+		'notifications',
 	];
 
 	for (let table of tables) {

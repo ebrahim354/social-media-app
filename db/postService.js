@@ -1,17 +1,41 @@
-const { query } = require('../db');
+const { query, pool } = require('../db');
 const { objectToParams } = require('./utils/dynamicSql');
 
 const createPost = async ({ description, userId, img }) => {
+	if (!img) img = '';
+	if (!description) description = '';
+	const client = await pool.connect();
 	try {
+		await client.query('begin');
 		const {
 			rows: [post],
-		} = await query(
+		} = await client.query(
 			`insert into posts(author, description, img) values($1, $2, $3) returning *`,
 			[userId, description, img ? img : '']
 		);
+		// subscribe friends;
+		await client.query(
+			`insert into posts_subscribers(post_id, user_id)
+			 select $1, users.user_id from (
+				select 
+				case  
+					when user1_id = $2 then user2_id 
+					when user2_id = $2 then user1_id
+				end user_id
+				from friendship
+				where $2 in (user1_id, user2_id)
+				) users;
+			`,
+			[post.id, userId]
+		);
+		await client.query(`commit`);
 		return post;
 	} catch (err) {
+		console.log('create post', err);
+		await client.query(`rollback`);
 		throw new Error('Invalid input');
+	} finally {
+		await client.release();
 	}
 };
 
@@ -101,7 +125,7 @@ const deletePost = async (postId, authorId) => {
 	}
 };
 
-const toggleLike = async (userId, postId) => {
+const togglePostLike = async (userId, postId) => {
 	try {
 		const {
 			rows: [post],
@@ -121,16 +145,28 @@ const toggleLike = async (userId, postId) => {
 
 //-------------------- comments-------------------------//
 const addComment = async ({ postId, userId, content, img }) => {
+	const client = await pool.connect();
 	try {
+		await client.query(`begin`);
 		const {
 			rows: [comment],
-		} = await query(
+		} = await client.query(
 			`insert into comments(post_id, user_id, content, img) values($1, $2, $3, $4) returning *`,
 			[postId, userId, content, img ? img : '']
 		);
+		await client.query(
+			`
+				insert into posts_subscribers values ($1, $2) on conflict do nothing;
+		`,
+			[postId, userId]
+		);
+		await client.query(`commit`);
 		return comment;
 	} catch (err) {
+		await client.query(`rollback`);
 		throw new Error('Invalid input');
+	} finally {
+		await client.release();
 	}
 };
 
@@ -152,15 +188,34 @@ const updateComment = async (commentId, userId, updates) => {
 	}
 };
 
+const toggleCommentLike = async (userId, commentId) => {
+	try {
+		const {
+			rows: [comment],
+		} = await query(
+			`insert into comment_likes(user_id, comment_id) values($1, $2) 
+										on conflict(user_id, comment_id)
+										do  update set liked = not comment_likes.liked 
+										where comment_likes.user_id = $1 and comment_likes.post_id = $2
+										returning liked;`,
+			[userId, commentId]
+		);
+		return comment.liked;
+	} catch (e) {
+		throw new Error('Comment is not found');
+	}
+};
+
 module.exports = {
 	createPost,
 	updatePost,
 	postQuery,
 	getOnePost,
-	toggleLike,
+	togglePostLike,
 	getTimeLine,
 	getUserPosts,
 	deletePost,
 	addComment,
 	updateComment,
+	toggleCommentLike,
 };

@@ -8,17 +8,8 @@ let token2 = null;
 let user1 = null;
 let user2 = null;
 beforeAll(async () => {
-	// const data = await api
-	// 	.post('/api/auth/login')
-	// 	.send({
-	// 		username: 'user2',
-	// 		password: '2',
-	// 	})
-	// 	.expect(200)
-	// token1 = data.body.token
-
 	try {
-		query('delete from users');
+		await query('delete from users');
 		const data1 = await api
 			.post('/api/auth/register')
 			.send({

@@ -1,6 +1,7 @@
 const users = require('./User');
 const posts = require('./Post');
 const chats = require('./Chat');
+const notifications = require('./Notification');
 const { pool } = require('../db');
 
 const operations = [
@@ -12,10 +13,14 @@ const operations = [
 	posts.createPostLikesTable,
 	posts.createCommentsTable,
 	posts.cerateCommentLikesTable,
+	posts.createPostsSubscibersTable,
 
 	chats.createConversationsTable,
 	chats.createMessagesTable,
 	chats.createUsersConversationsTable,
+
+	notifications.createNotificationsTable,
+	notifications.createNotificationsUsersTable,
 ];
 
 const init = async () => {

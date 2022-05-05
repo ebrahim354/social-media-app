@@ -32,8 +32,19 @@ const comments_columns = [
 const comment_likes_columns = [
 	'comment_id int references comments(id)  ON DELETE CASCADE',
 	'user_id int references users(id) ON DELETE CASCADE',
+	'liked bool not null default true',
 	'primary key (comment_id, user_id)',
 ];
+
+const posts_subscribers = [
+	'post_id int references posts(id)  ON DELETE CASCADE',
+	'user_id int references users(id) ON DELETE CASCADE',
+	'primary key (post_id, user_id)',
+];
+
+const createPostsSubscibersTable = () => {
+	return query(`CREATE TABLE posts_subscribers(${posts_subscribers.join()});`);
+};
 
 const createPostsTable = () => {
 	return query(`CREATE TABLE posts(${posts_columns.join(',')});`);
@@ -56,4 +67,5 @@ module.exports = {
 	createPostLikesTable,
 	createCommentsTable,
 	cerateCommentLikesTable,
+	createPostsSubscibersTable,
 };

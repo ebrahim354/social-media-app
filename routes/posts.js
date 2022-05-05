@@ -5,7 +5,7 @@ const multer = require('multer');
 const {
 	createPost,
 	updatePost,
-	toggleLike,
+	togglePostLike,
 	getOnePost,
 	getUserPosts,
 	getTimeLine,
@@ -13,6 +13,7 @@ const {
 	addComment,
 	updateComment,
 } = require('../db/postService');
+const { publishPostNotification } = require('../db/notificationService');
 const upload = multer({
 	dest: 'public/post',
 });
@@ -26,8 +27,10 @@ router.post(
 	async (req, res, next) => {
 		const { description, img } = req.body;
 		const userId = req.userId;
+		const notification = `has created a new post!`;
 		try {
 			const post = await createPost({ description, img, userId });
+			await publishPostNotification(post.id, userId, notification);
 			res.status(200).json({
 				data: {
 					post,
@@ -65,8 +68,10 @@ router.put('/:id', async (req, res, next) => {
 router.put('/:id/like', async (req, res, next) => {
 	const postId = req.params.id;
 	const userId = req.body.userId;
+	const content = 'has liked a post that you are following!';
 	try {
-		const liked = await toggleLike(userId, postId);
+		const liked = await togglePostLike(userId, postId);
+		if (liked) await publishPostNotification(postId, userId, content);
 		res.status(200).json({
 			data: {
 				liked,
@@ -147,10 +152,13 @@ router.delete('/:id', async (req, res, next) => {
 router.post('/:id/addComment', async (req, res, next) => {
 	const postId = req.params.id;
 	const userId = req.body.userId;
+	const notificationContent =
+		'has commented on a post that your are following!';
 	const { img, content } = req.body.data;
 
 	try {
 		const comment = await addComment({ userId, postId, img, content });
+		await publishPostNotification(postId, userId, notificationContent);
 		res.status(200).json({
 			data: {
 				comment,
@@ -175,6 +183,24 @@ router.put('/comment/:id', async (req, res, next) => {
 		res.status(200).json({
 			data: {
 				comment,
+			},
+			errors: null,
+		});
+	} catch (err) {
+		next(err);
+	}
+});
+
+//like/dislike comment
+router.put('/commentLike/:id', async (req, res, next) => {
+	const commentId = req.params.id;
+	const userId = req.body.userId;
+	try {
+		// publish notifications later on.
+		const liked = await toggleCommentLike(userId, commentId);
+		res.status(200).json({
+			data: {
+				liked,
 			},
 			errors: null,
 		});
