@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 const path = require('path')
 const fs = require('fs')
 const publicKey = fs.readFileSync(
-	path.resolve(__dirname, '..') + '/publicKey.pem'
+	path.resolve(__dirname, '../..') + '/publicKey.pem'
 )
 const verifyToken = (token, catchErr) => {
 	let payload
