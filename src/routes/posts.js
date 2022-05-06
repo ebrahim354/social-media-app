@@ -15,7 +15,7 @@ const {
 } = require('../db/postService');
 const { publishPostNotification } = require('../db/notificationService');
 const upload = multer({
-	dest: 'public/post',
+	dest: '../../public/post',
 });
 
 //create a post
