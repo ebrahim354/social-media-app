@@ -16,7 +16,7 @@ const acceptFriendRequest = async (userId, id) => {
 	if (!sent) throw new Error('already sent');
 	if (friends) throw new Error('already friends');
 	// TBD:
-	// use transactions later.
+	// use transactions.
 	await query(
 		'delete from friend_request where sender in ($1, $2) and receiver in($1, $2)',
 		[userId, id]

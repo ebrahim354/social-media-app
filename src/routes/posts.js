@@ -192,7 +192,7 @@ router.put('/comment/:id', async (req, res, next) => {
 });
 
 //like/dislike comment
-router.put('/commentLike/:id', async (req, res, next) => {
+router.put('/LikeComment/:id', async (req, res, next) => {
 	const commentId = req.params.id;
 	const userId = req.body.userId;
 	try {
