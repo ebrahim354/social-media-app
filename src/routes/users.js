@@ -6,6 +6,8 @@ const {
 	deleteUser,
 	getSimpleUser,
 } = require('../db/userService');
+
+const { getUserPosts } = require('../db/postService');
 const {
 	updatesValidation,
 	userIdValidation,
@@ -20,6 +22,7 @@ router.get('/', async (req, res, next) => {
 		if (!user) {
 			return res.status(404).send('user not found');
 		}
+		delete user.password;
 		res.status(200).json(user);
 	} catch (err) {
 		next(err);
@@ -64,6 +67,22 @@ router.get('/:id', async (req, res, next) => {
 		const user = await getSimpleUser(id);
 		if (!user) return res.status(404).send('user not found');
 		res.status(200).json(user);
+	} catch (err) {
+		next(err);
+	}
+});
+
+//get some user's posts
+router.get('/:id/posts', async (req, res, next) => {
+	const user = req.params.id;
+	try {
+		const posts = await getUserPosts(user);
+		res.status(200).json({
+			data: {
+				posts,
+			},
+			errors: null,
+		});
 	} catch (err) {
 		next(err);
 	}

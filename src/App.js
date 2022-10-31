@@ -15,7 +15,7 @@ const getToken = require('./middleware/getToken');
 const { validateToken } = require('./middleware/validation');
 const errorHandler = require('./middleware/errorHandler');
 
-App.use(express.static(path.join(__dirname, '.')));
+App.use(express.static(path.join(__dirname, '..')));
 App.use(express.json());
 App.use(morgan('tiny'));
 App.use(helmet());

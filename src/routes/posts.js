@@ -1,5 +1,9 @@
 const router = require('express').Router();
-const { userIdValidation, validatePost } = require('../middleware/validation');
+const {
+	userIdValidation,
+	validatePost,
+	updatesValidation,
+} = require('../middleware/validation');
 
 const multer = require('multer');
 const {
@@ -7,15 +11,16 @@ const {
 	updatePost,
 	togglePostLike,
 	getOnePost,
-	getUserPosts,
 	getTimeLine,
 	deletePost,
 	addComment,
 	updateComment,
+	toggleCommentLike,
 } = require('../db/postService');
 const { publishPostNotification } = require('../db/notificationService');
+const path = require('path');
 const upload = multer({
-	dest: '../../public/post',
+	dest: path.join(__dirname, '../../public/post'),
 });
 
 //create a post
@@ -44,7 +49,7 @@ router.post(
 );
 
 //update a post
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', updatesValidation, async (req, res, next) => {
 	const postId = req.params.id;
 	const updates = req.body.updates;
 	const userId = req.body.userId;
@@ -99,22 +104,6 @@ router.get('/:id', async (req, res, next) => {
 	}
 });
 
-//get some user's posts
-router.get('/:id/posts', async (req, res, next) => {
-	const user = req.params.id;
-	try {
-		const posts = await getUserPosts(user);
-		res.status(200).json({
-			data: {
-				posts,
-			},
-			errors: null,
-		});
-	} catch (err) {
-		next(err);
-	}
-});
-
 //gets timeline posts
 router.get('/', async (req, res, next) => {
 	const userId = req.body.userId;
@@ -148,13 +137,13 @@ router.delete('/:id', async (req, res, next) => {
 	}
 });
 
-// add a comment on a post
+// add a comment to a post
 router.post('/:id/addComment', async (req, res, next) => {
 	const postId = req.params.id;
 	const userId = req.body.userId;
 	const notificationContent =
 		'has commented on a post that your are following!';
-	const { img, content } = req.body.data;
+	const { content, img } = req.body;
 
 	try {
 		const comment = await addComment({ userId, postId, img, content });
@@ -170,7 +159,7 @@ router.post('/:id/addComment', async (req, res, next) => {
 	}
 });
 //update a comment
-router.put('/comment/:id', async (req, res, next) => {
+router.put('/comment/:id', updatesValidation, async (req, res, next) => {
 	const commentId = req.params.id;
 	const updates = req.body.updates;
 	const userId = req.body.userId;

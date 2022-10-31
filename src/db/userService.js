@@ -37,10 +37,10 @@ const getFullUser = async ({ username, email, id }) => {
 	const {
 		rows: [user],
 	} = await query(
-		`select u1.*, 
-    coalesce (array_agg(json_build_object('username', u2.username, 'profilePicture', u2.profile_picture)) 
+		`select u1.*, u1.profile_picture as "profilePicture", u1.cover_picture as "coverPicture",
+    coalesce (array_agg(json_build_object('id', u2.id, 'username', u2.username, 'profilePicture', u2.profile_picture)) 
     filter (where u2.username is not null), '{}') friends,
-    coalesce (array_agg(json_build_object('username', u3.username, 'profilePicture', u3.profile_picture)) 
+    coalesce (array_agg(json_build_object('id', u3.id, 'username', u3.username, 'profilePicture', u3.profile_picture)) 
     filter (where u3.username is not null), '{}') friendRequests
     from users u1
     left join friendship f on u1.id in (f.user1_id, f.user2_id) 
@@ -62,6 +62,7 @@ const updateUser = async (id, updates) => {
 			`update users set ${result} where id = $${counter} returning *;`,
 			[...vals, id]
 		);
+		delete user.password;
 		return user;
 	} catch (err) {
 		throw err;

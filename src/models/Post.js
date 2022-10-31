@@ -8,7 +8,7 @@ const posts_columns = [
 	'description VARCHAR(256)',
 	'img text',
 	'likes_count int default 0',
-	'create_at timestamp NOT NULL default now()',
+	'created_at timestamp NOT NULL default now()',
 	'updated_at timestamp NOT NULL default now()',
 ];
 

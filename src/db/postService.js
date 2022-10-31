@@ -51,6 +51,7 @@ const updatePost = async (postId, userId, updates) => {
 			} returning *;`,
 			[...vals, postId, userId]
 		);
+		console.log(post);
 		return post;
 	} catch (err) {
 		throw new Error('Invalid input');
@@ -58,37 +59,55 @@ const updatePost = async (postId, userId, updates) => {
 };
 
 const postQuery = async (filter, params) => {
-	const {
-		rows: [post],
-	} = await query(
-		`
+	try {
+		const { rows } = await query(
+			`
       select p.*, 
-      json_build_object('username', author.username, 'profilePicture', author.profile_picture) as user,
-      coalesce (array_agg(json_build_object('username', u.username, 'profilePicture', u.profile_picture)) 
-      filter (where u.username is not null), '{}') as likes,
-      coalesce (array_agg(
-        json_build_object
-        ('username', u2.username, 'profilePicture', u2.profile_picture,
-        'content', c.content, 'img', c.img, 'createdAt', c.created_at, 'updatedAt', c.updated_at)
-      ) filter (where u2.username is not null), '{}') as comments
+      json_build_object('id', author.id, 'username', author.username, 'profilePicture', author.profile_picture) as author,
+ 				(
+				select array_agg(pl.user_id) from 
+				post_likes pl
+				where pl.post_id = p.id and pl.liked = true
+			) as likes,
+			(
+				select array_agg(json_build_object('id', c.id, 'content', c.content, 
+				'img', c.img, 'createdAt', c.created_at,
+				'userId', c.user_id, 'author', (select username from users where users.id = c.user_id),
+				'profilePicture', (select profile_picture from users where users.id = c.user_id),
+				'likes', (
+					select 
+					coalesce( array_agg(cl.user_id) filter (where cl.user_id is not null), '{}')
+					from comment_likes cl 
+					where cl.comment_id = c.id and cl.liked = true)
+				))
+				from comments c 
+				where c.post_id = p.id
+			) as comments
       from posts p
       join users author on  p.author = author.id
-      left join post_likes pl on p.id = pl.post_id
-      left join users u on pl.user_id = u.id
-      left join comments c on p.id = c.post_id
-      left join users u2 on c.user_id = u2.id
 			${filter}
-      group by p.id, author.username, author.profile_picture;
 		`,
-		params
-	);
-	if (!post) throw new Error('post is not found');
-	return post;
+			params
+		);
+		for (post of rows) {
+			if (post.likes === null) post.likes = [];
+			if (post.comments === null) post.comments = [];
+		}
+		return rows;
+	} catch (err) {
+		console.log(err);
+		throw new Error('Database error!');
+	}
 };
 
 const getOnePost = async postId => {
-	const post = await postQuery('where p.id = $1', [postId]);
-	return post;
+	try {
+		const post = await postQuery('where p.id = $1', [postId]);
+		if (!post[0]) throw new Error('Post is not found!');
+		return post[0];
+	} catch (err) {
+		throw new Error('Post is not found!');
+	}
 };
 
 const getUserPosts = async userId => {
@@ -164,6 +183,7 @@ const addComment = async ({ postId, userId, content, img }) => {
 		return comment;
 	} catch (err) {
 		await client.query(`rollback`);
+		console.log('comment error: ', err);
 		throw new Error('Invalid input');
 	} finally {
 		await client.release();
@@ -196,12 +216,30 @@ const toggleCommentLike = async (userId, commentId) => {
 			`insert into comment_likes(user_id, comment_id) values($1, $2) 
 										on conflict(user_id, comment_id)
 										do  update set liked = not comment_likes.liked 
-										where comment_likes.user_id = $1 and comment_likes.post_id = $2
+										where comment_likes.user_id = $1 and comment_likes.comment_id = $2
 										returning liked;`,
 			[userId, commentId]
 		);
+		if (comment.liked) {
+			await query(
+				`
+				update comments c set likes_count = likes_count + 1
+				where c.id = $1
+			`,
+				[commentId]
+			);
+		} else {
+			await query(
+				`
+				update comments c set likes_count = likes_count - 1
+				where c.id = $1
+			`,
+				[commentId]
+			);
+		}
 		return comment.liked;
 	} catch (e) {
+		console.log(e);
 		throw new Error('Comment is not found');
 	}
 };
