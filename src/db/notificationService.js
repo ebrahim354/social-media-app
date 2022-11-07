@@ -1,8 +1,11 @@
 const { pool, query } = require('../db');
+const client = require('../NotificationPublisher');
 
 const publishPostNotification = async (postId, userId, content) => {
 	try {
-		await query(
+		const {
+			rows: [users],
+		} = await query(
 			`
       with "user" as(
         select u.username as name, u.profile_picture as img from users u where u.id = $1
@@ -16,10 +19,13 @@ const publishPostNotification = async (postId, userId, content) => {
        select returned_id.id , output.user_id 
        from returned_id, (
          select user_id from posts_subscribers
-         where $3 = posts_subscribers.post_id ) output;
+         where $3 = posts_subscribers.post_id ) output returning user_id;
       `,
 			[userId, content, postId]
 		);
+
+		const message = { users, content };
+		await client.publish('NOTIFICATIONS', JSON.stringify(message));
 	} catch (err) {
 		console.log('notifications', err);
 		throw new Error('something wrong happened!');
@@ -50,6 +56,9 @@ const publishAcceptFriendRequest = async (acceptorId, senderId) => {
       `,
 			[senderId, acceptorId]
 		);
+		const users = [acceptorId, senderId];
+		const message = { users, content };
+		await client.publish('NOTIFICATIONS', JSON.stringify(message));
 	} catch (err) {
 		console.log('notifications', err);
 		throw new Error('something wrong happened!');
@@ -81,6 +90,9 @@ const publishSendFriendRequest = async (receiverId, senderId) => {
       `,
 			[receiverId, senderId]
 		);
+		const users = [senderId, receiverId];
+		const message = { users, content };
+		await client.publish('NOTIFICATIONS', JSON.stringify(message));
 	} catch (err) {
 		console.log('notifications', err);
 		throw new Error('something wrong happened!');

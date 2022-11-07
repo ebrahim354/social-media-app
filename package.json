@@ -29,7 +29,8 @@
     "nodemon": "^2.0.7",
     "passport": "^0.4.1",
     "path": "^0.12.7",
-    "pg": "^8.7.1"
+    "pg": "^8.7.1",
+    "redis": "^4.4.0"
   },
   "devDependencies": {
     "supertest": "^6.1.6"
