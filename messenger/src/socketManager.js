@@ -5,12 +5,15 @@ const notificationsHandler = require('./socketHandlers/notificationsHandler');
 const verifyToken = require('./utils/verifyToken');
 const app = require('./index');
 const { createClient } = require('redis');
+const { REDIS } = require('./utils/config');
 
 const socketServer = new webSocketServer({
 	httpServer: app,
 });
 
-const client = createClient();
+const client = createClient({
+	url: REDIS,
+});
 
 client.on('error', err => console.log('redis error: ', err));
 

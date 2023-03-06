@@ -1,10 +1,11 @@
 const http = require('http');
 const App = require('./App');
+const { PORT } = require('./utils/config');
 
 const app = http.createServer(App);
 
-app.listen(8080, () => {
-	console.log('server is listening on port 8080');
+app.listen(PORT, () => {
+	console.log(`server is listening on port ${PORT}`);
 });
 
 module.exports = app;

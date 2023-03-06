@@ -10,6 +10,7 @@ const users = require('./routes/users');
 const posts = require('./routes/posts');
 const auth = require('./routes/auth');
 const friends = require('./routes/friends');
+const verification = require('./routes/verifyTokenRoute');
 // utils
 const getToken = require('./middleware/getToken');
 const { validateToken } = require('./middleware/validation');
@@ -22,7 +23,8 @@ App.use(helmet());
 App.use(cors());
 
 App.use(getToken);
-App.use('/api/auth', auth);
+App.use('/api/verifyToken', verification);
+App.use('/api/verification/', auth);
 App.use('/api/users', validateToken, users);
 App.use('/api/posts', validateToken, posts);
 App.use('/api/friends', validateToken, friends);

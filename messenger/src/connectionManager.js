@@ -10,7 +10,7 @@ const user_conversations = {};
 const conversation_users = {};
 
 const clearCache = () => {
-	console.log('yo clearing cache');
+	console.log('clearing cache');
 	for (let userId in user_connection) {
 		if (user_connection[userId].state != 'closed') continue;
 		const convs = getConversations(userId);
