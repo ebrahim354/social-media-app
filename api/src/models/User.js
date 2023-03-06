@@ -34,16 +34,20 @@ const friend_request_columns = [
 ];
 
 const createUsersTable = () => {
-	return query(`CREATE TABLE users(${users_columns.join(',')});`);
+	return query(`CREATE TABLE IF NOT EXISTS users(${users_columns.join(',')});`);
 };
 
 const createFiendshipTable = () => {
-	return query(`CREATE TABLE friendship(${friendship_columns.join(',')});`);
+	return query(
+		`CREATE TABLE IF NOT EXISTS friendship(${friendship_columns.join(',')});`
+	);
 };
 
 const createFriendRequetsTable = () => {
 	return query(
-		`CREATE TABLE friend_request(${friend_request_columns.join(',')});`
+		`CREATE TABLE IF NOT EXISTS friend_request(${friend_request_columns.join(
+			','
+		)});`
 	);
 };
 

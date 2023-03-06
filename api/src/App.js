@@ -22,6 +22,9 @@ App.use(morgan('tiny'));
 App.use(helmet());
 App.use(cors());
 
+App.get('/', (_, res) => {
+	return res.send('hello');
+});
 App.use(getToken);
 App.use('/api/verifyToken', verification);
 App.use('/api/verification/', auth);

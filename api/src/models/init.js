@@ -2,7 +2,6 @@ const users = require('./User');
 const posts = require('./Post');
 const chats = require('./Chat');
 const notifications = require('./Notification');
-const { pool } = require('../db');
 
 const operations = [
 	users.createUsersTable,
@@ -36,9 +35,6 @@ const init = async () => {
 			console.log(err);
 		}
 	}
-	pool.end();
 };
-
-init();
 
 module.exports = init;

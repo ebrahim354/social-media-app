@@ -43,23 +43,31 @@ const posts_subscribers = [
 ];
 
 const createPostsSubscibersTable = () => {
-	return query(`CREATE TABLE posts_subscribers(${posts_subscribers.join()});`);
+	return query(
+		`CREATE TABLE IF NOT EXISTS posts_subscribers(${posts_subscribers.join()});`
+	);
 };
 
 const createPostsTable = () => {
-	return query(`CREATE TABLE posts(${posts_columns.join(',')});`);
+	return query(`CREATE TABLE IF NOT EXISTS posts(${posts_columns.join(',')});`);
 };
 
 const createPostLikesTable = () => {
-	return query(`CREATE TABLE post_likes(${post_likes_columns.join(',')});`);
+	return query(
+		`CREATE TABLE IF NOT EXISTS post_likes(${post_likes_columns.join(',')});`
+	);
 };
 
 const createCommentsTable = () => {
-	return query(`create table comments(${comments_columns.join(',')});`);
+	return query(
+		`create table IF NOT EXISTS comments(${comments_columns.join(',')});`
+	);
 };
 const cerateCommentLikesTable = () => {
 	return query(
-		`create table comment_likes(${comment_likes_columns.join(',')});`
+		`create table IF NOT EXISTS comment_likes(${comment_likes_columns.join(
+			','
+		)});`
 	);
 };
 module.exports = {

@@ -21,17 +21,21 @@ const users_conversations_columns = [
 ];
 
 const createConversationsTable = () => {
-	return query(`CREATE TABLE conversations(${conversations_columns.join()});`);
+	return query(
+		`CREATE TABLE IF NOT EXISTS conversations(${conversations_columns.join()});`
+	);
 };
 
 const createUsersConversationsTable = () => {
 	return query(
-		`CREATE TABLE users_conversations(${users_conversations_columns.join()});`
+		`CREATE TABLE IF NOT EXISTS users_conversations(${users_conversations_columns.join()});`
 	);
 };
 
 const createMessagesTable = () => {
-	return query(`CREATE TABLE messages(${messages_columns.join()});`);
+	return query(
+		`CREATE TABLE IF NOT EXISTS messages(${messages_columns.join()});`
+	);
 };
 
 module.exports = {
