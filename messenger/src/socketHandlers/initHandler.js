@@ -39,5 +39,11 @@ module.exports = async (userId, connection) => {
 			);
 		}
 	}
-	connection.send(JSON.stringify(conversations));
+
+	connection.send(
+		JSON.stringify({
+			method: 'INIT',
+			data: conversations,
+		})
+	);
 };

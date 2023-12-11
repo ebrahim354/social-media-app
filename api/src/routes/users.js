@@ -5,13 +5,21 @@ const {
 	updateUser,
 	deleteUser,
 	getSimpleUser,
+	getUsersWithUsername
 } = require('../db/userService');
 
 const { getUserPosts } = require('../db/postService');
 const {
 	updatesValidation,
 	userIdValidation,
+	validateImg
 } = require('../middleware/validation');
+
+const path = require('path');
+const multer = require('multer');
+const upload = multer({
+	dest: path.join(__dirname, '../../public/post'),
+});
 
 //get the user on the token (data for login)
 router.get('/', async (req, res, next) => {
@@ -28,6 +36,61 @@ router.get('/', async (req, res, next) => {
 		next(err);
 	}
 });
+
+// upload user profile picture.
+router.post(
+	'/upload-profile-picture',
+	userIdValidation,
+	upload.single('file'),
+	validateImg,
+	async (req, res, next) => {
+		const profile_picture = req.body.img;
+		const userId = req.userId;
+//		const notification = `has uploaded a new profile picture!`;
+		try {
+			const user = await updateUser(userId, {profile_picture});
+			// handle that later.
+			// await publishPostNotification(post.id, userId, notification);
+			res.status(200).json({
+				data: {
+					profile_picture: user.profile_picture
+				},
+				errors: null,
+			});
+		} catch (err) {
+			next(err);
+		}
+	}
+);
+
+// upload user cover picture.
+router.post(
+	'/upload-cover-picture',
+	userIdValidation,
+	upload.single('file'),
+	validateImg,
+	async (req, res, next) => {
+		const cover_picture = req.body.img;
+		const userId = req.userId;
+//		const notification = `has uploaded a new cover picture!`;
+		try {
+			const user = await updateUser(userId, {cover_picture});
+			// handle that later.
+			// await publishPostNotification(post.id, userId, notification);
+			res.status(200).json({
+				data: {
+					cover_picture: user.cover_picture
+				},
+				errors: null,
+			});
+		} catch (err) {
+			next(err);
+		}
+	}
+);
+
+
+
 
 //update user
 router.put('/', updatesValidation, userIdValidation, async (req, res, next) => {
@@ -71,6 +134,19 @@ router.get('/:id', async (req, res, next) => {
 		next(err);
 	}
 });
+
+//get users with search query
+router.get('/search/:username', async (req, res, next) => {
+	const username = req.params.username;
+	try {
+		const users = await getUsersWithUsername(username);
+		if (!users) return res.status(404).send('user not found');
+		res.status(200).json(users);
+	} catch (err) {
+		next(err);
+	}
+});
+
 
 //get some user's posts
 router.get('/:id/posts', async (req, res, next) => {

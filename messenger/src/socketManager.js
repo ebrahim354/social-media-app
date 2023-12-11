@@ -42,7 +42,9 @@ const main = async () => {
 			connection.on('message', async msg => {
 				try {
 					const req = JSON.parse(msg.utf8Data);
-					const payload = verifyToken(req.token);
+					console.log('user request: ', req);
+					const payload = verifyToken(req.data.token);
+					console.log('user token', payload);
 					const userId = payload.sub;
 					if (req.method == 'AUTHENTICATE') {
 						await initHandler(userId, connection);

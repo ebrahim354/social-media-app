@@ -88,6 +88,22 @@ const getSimpleUser = async id => {
 	return user;
 };
 
+const getUsersWithUsername = async username => {
+	const {
+		rows: users,
+	} = await query(`select * from users where username like '%${username}%';`);
+	for(let user of users){
+		user.profilePicture = user.profile_picture;
+		user.coverPicture = user.cover_picture;
+		delete user.password;
+		delete user.profile_picture;
+		delete user.cover_picture;
+		delete user.updated_at;
+		delete user.created_at;
+	}
+	return users;
+};
+
 module.exports = {
 	userExists,
 	insertUser,
@@ -95,4 +111,5 @@ module.exports = {
 	updateUser,
 	deleteUser,
 	getSimpleUser,
+	getUsersWithUsername,
 };

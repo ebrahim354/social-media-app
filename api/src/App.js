@@ -25,9 +25,10 @@ App.use(cors());
 App.get('/', (_, res) => {
 	return res.send('hello');
 });
+
 App.use(getToken);
 App.use('/api/verifyToken', verification);
-App.use('/api/verification/', auth);
+App.use('/api/auth/', auth);
 App.use('/api/users', validateToken, users);
 App.use('/api/posts', validateToken, posts);
 App.use('/api/friends', validateToken, friends);

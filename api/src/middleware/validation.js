@@ -29,6 +29,36 @@ const userIdValidation = (req, res, next) => {
 	req.userId = req.body.userId;
 	next();
 };
+
+
+const validateImg = (req, res, next) => {
+	// if the post is empty rais an error
+	if (!req.file) {
+		const error = new Error('invalid img');
+		error.name = 'ValidationError';
+		return next(error);
+	}
+	// vallidate and save the img if there is any
+	const tmpPath = req.file.path;
+	const imgPath = path.join(
+		'/public/post',
+		Date.now() + req.file.originalname
+	);
+	const newPath = path.join(__dirname, '../..', imgPath);
+	const extName = path.extname(req.file.originalname).toLowerCase();
+	// check for accepted extentions only
+	if (extName !== '.png' && extName !== '.jpeg' && extName !== '.jpg') {
+		fs.unlinkSync(tmpPath);
+		const error = new Error('invalid img');
+		error.name = 'ValidationError';
+		return next(error);
+	}
+	// the img ext is accepted rename it
+	fs.renameSync(tmpPath, newPath);
+	req.body.img = imgPath;
+	next();
+};
+
 const validatePost = (req, res, next) => {
 	// if the post is empty rais an error
 	if (!req.file && !req.body.description) {
@@ -40,16 +70,12 @@ const validatePost = (req, res, next) => {
 	// vallidate and save the img if there is any
 	if (req.file) {
 		const tmpPath = req.file.path;
-		console.log(tmpPath);
 		const imgPath = path.join(
 			'/public/post',
 			Date.now() + req.file.originalname
 		);
-		console.log(imgPath);
 		const newPath = path.join(__dirname, '../..', imgPath);
-		console.log('new path', newPath);
 		const extName = path.extname(req.file.originalname).toLowerCase();
-		console.log(extName);
 		// check for accepted extentions only
 		if (extName !== '.png' && extName !== '.jpeg' && extName !== '.jpg') {
 			fs.unlinkSync(tmpPath);
@@ -62,9 +88,6 @@ const validatePost = (req, res, next) => {
 		// the img ext is accepted rename it
 		fs.renameSync(tmpPath, newPath);
 		req.body.img = imgPath;
-		console.log('img path is: ', imgPath);
-		console.log('new path is: ', newPath);
-		console.log('tmp path is: ', tmpPath);
 	}
 
 	next();
@@ -89,4 +112,5 @@ module.exports = {
 	updatesValidation,
 	validatePost,
 	validateToken,
+	validateImg,
 };

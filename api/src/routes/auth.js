@@ -13,7 +13,7 @@ router.post('/register', async (req, res, next) => {
 		const data = req.body;
 		const user = await userExists(data);
 		if (user) {
-			res.status(400).send('Invalid Username or e-mail!');
+			res.status(400).send('User already exists!');
 			return;
 		}
 		const salt = await bcrypt.genSalt(10);
