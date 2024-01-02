@@ -26,10 +26,9 @@ router.post('/startConversation', async (req, res, next) => {
 
 // get one conversation
 router.get('/:id', async (req, res, next) => {
-	const userId = req.body.userId;
-	const conversationId = req.params.id;
+	const convId = req.params.id;
 	try {
-		const conversation = await getOneConversation(userId, conversationId);
+		const conversation = await getOneConversation(convId);
 		res.status(200).json({
 			data: {
 				conversation,

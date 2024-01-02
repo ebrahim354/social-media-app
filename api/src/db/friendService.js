@@ -69,11 +69,27 @@ const unfriend = async (userId, id) => {
 	);
 };
 
-// TBD.
+const getFriends = async (userId) => {
+	try{
+		const { rows } = await query(` select * from friendship fs where $1 in (user1_id, user2_id);`, [
+			userId,
+		]);
+		const friends = rows.map(r => r.user1_id == userId ? r.user2_id : r.user1_id);
+		return friends;
+	} catch(err){
+		console.log(err);
+	}
+};
+
+
+
+
+// TBD:
 // add block functionality.
 
 module.exports = {
 	acceptFriendRequest,
 	sendOrDeleteFriendRequest,
 	unfriend,
+	getFriends
 };

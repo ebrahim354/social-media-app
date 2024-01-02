@@ -1,4 +1,4 @@
-const { query } = require('./index');
+const { query, pool } = require('./index');
 
 const getUsersOfConversations = async convIds => {
 	if (convIds.length == 0) return [];
@@ -59,14 +59,13 @@ const getTopConversations = async userId => {
 				}
 			}
 		}
-		console.log('hi this is after error');
 		return conversations;
 	} catch (err) {
 		console.log('wtf', err);
 	}
 };
 
-const getOneConversation = async (userId, conversationId) => {
+const getOneConversation = async (conversationId) => {
 	try {
 		const { rows: conversation } = await query(
 			`
@@ -75,20 +74,20 @@ const getOneConversation = async (userId, conversationId) => {
 			json_build_object
 			('author', m.author_id, 'content', m.content, 'createdAt', m.created_at, 
 			'updatedAt', m.updated_at, 'id', m.id)
-		) filter(where m.created_at is not null), '{}') messages,
-    count(m.*) number_of_messages
+		) filter(where m.id is not null), '{}') messages,
+		(
+			select array_agg(uc.user_id) from users_conversations uc where uc.conversation_id = c.id
+		) as users
 		from conversations c
 		left join messages m on c.id = m.conversation_id
 		left join users_conversations uc on c.id = uc.conversation_id 
 		left join users u on uc.user_id = u.id
-		where uc.user_id = $1 and conversationId = $2
+		where c.id = $1
 		group by c.id
     `,
-			[userId, conversationId]
+			[conversationId]
 		);
-		const conversationUsers = await getUsersOfConversations(conversation[0].id);
-		conversation.users = conversationUsers.users;
-		return conversation;
+		return conversation[0];
 	} catch (err) {
 		console.log(err);
 	}
@@ -114,37 +113,55 @@ const getConnectedUsers = async userId => {
 	}
 };
 
-const addMessage = async (userId, conversationId, content) => {
+const addMessage = async (senderId, receiverId, content) => {
+	console.log('senderId', senderId, 'rec id', receiverId, 'cont', content);
 	try {
 		const { rows: message } = await query(
-			`
-			insert into messages(author_id, conversation_id, content) values(
-				$1, $2, $3
-			) returning *;
+			
+			`with conv as (select id from conversations where $1 in 
+				(user1_id, user2_id) and $2 in (user1_id, user2_id))
+			insert into messages(author_id, conversation_id, content) select
+			$1, conv.id, '${content}' from conv returning *;
 		`,
-			[userId, conversationId, content]
+			[senderId, receiverId]
 		);
+		message[0].author = message[0].author_id;
 		return message[0];
 	} catch (err) {
 		console.log(err);
 	}
 };
 
-const startConversation = async usersIds => {
+const startConversation = async (userIds) => {
+	const client = await pool.connect();
 	try {
-		const { rows: conversation } = await query(`
-				with conversation as (
-					insert into conversations default values returning id
-				)
-				insert into users_conversations(conversation_id, user_id)
-				select conversation.id , "users" from conversation, 
-				unnest(array[${usersIds.join()}]) "users" returning conversation_id;	
+		await client.query('begin');
+
+		const { rows } = await client.query(`
+			insert into conversations default values returning *;
 		`);
-		return conversation[0].conversation_id;
+		const conversationId = rows[0].id;
+
+		// prepare userId string.
+		let idsStr = "";
+		for(let i = 1; i <= userIds.length; i++){
+			idsStr += `($${i}, ${conversationId})`
+			if(i!= userIds.length) idsStr+= ',';
+		}
+
+		const { _ } = await client.query(`
+			insert into users_conversations values ${idsStr};
+		`, [...userIds]);
+		await client.query(`commit`);
+
+		return conversationId;
 	} catch (err) {
+		await client.query(`rollback`);
 		console.log(err);
 	}
 };
+
+
 
 module.exports = {
 	getTopConversations,

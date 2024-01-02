@@ -126,8 +126,9 @@ router.delete('/', userIdValidation, async (req, res, next) => {
 //get a user
 router.get('/:id', async (req, res, next) => {
 	const id = req.params.id;
+	const userId = req.body.userId;
 	try {
-		const user = await getSimpleUser(id);
+		const user = await getSimpleUser(id, userId);
 		if (!user) return res.status(404).send('user not found');
 		res.status(200).json(user);
 	} catch (err) {

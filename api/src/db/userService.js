@@ -1,5 +1,6 @@
 const { query } = require('../db');
 const { objectToParams } = require('./utils/dynamicSql');
+const { areFriends, requestSent } = require('./utils/userUtils');
 
 const userExists = async ({ username, email }) => {
 	const {
@@ -78,13 +79,18 @@ const deleteUser = async id => {
 	}
 };
 
-const getSimpleUser = async id => {
+const getSimpleUser = async (id, myId) => {
 	const {
 		rows: [user],
 	} = await query('select * from users where id = $1;', [id]);
+	// TBD: optimise into a single db call not 3.
+	const friends = await areFriends(id, myId);
+	const sent = await requestSent(myId, id, true);
 	delete user.password;
 	delete user.updated_at;
 	delete user.created_at;
+	user.areFriends = friends;
+	user.friendRequestSent = sent;
 	return user;
 };
 

@@ -6,13 +6,18 @@ const { setInterval } = require('timers');
 // "conversation_users" maps conversations id to the current array of connected users.
 
 const user_connection = {};
+const user_onlineFriends = {};
 const user_conversations = {};
 const conversation_users = {};
 
 const clearCache = () => {
-	console.log('clearing cache');
+	console.log('clearing cache'); 	
 	for (let userId in user_connection) {
-		if (user_connection[userId].state != 'closed') continue;
+		if (user_connection[userId].state == 'closed') {
+			userDisconnected(userId);
+			delete user_connection[userId];
+		};
+		/*
 		const convs = getConversations(userId);
 		for (let cid of convs) {
 			const users = getUsersOfConversation(cid);
@@ -31,10 +36,11 @@ const clearCache = () => {
 			removeUserFromConversation(userId, cid);
 		}
 		removeConversations(userId);
+		*/
 	}
 };
 
-setInterval(clearCache, 60000);
+setInterval(clearCache, 100000);
 
 const getConnection = userId => {
 	return user_connection[userId];
@@ -63,6 +69,31 @@ const addConversations = (userId, conversationsIds) => {
 	}
 };
 
+const userConnected = (userId, onlineUsers) => {
+	if(!getConnection(userId)) return;
+	user_onlineFriends[userId] = onlineUsers;
+	for (let friendId of onlineUsers) {
+		if(getConnection(friendId) && user_onlineFriends[friendId]) 
+			user_onlineFriends[friendId].push(userId);
+	}
+};
+
+const userDisconnected = (userId) => {
+	if(!user_onlineFriends[userId])  return;
+	for(let friendId of user_onlineFriends[userId]){
+		if(!getConnection(friendId)) continue;
+		getConnection(friendId).send(
+			JSON.stringify({
+				method: 'USER_LEFT',
+				data: {
+					userId,
+				},
+			})
+		);
+	}
+	delete user_onlineFriends[userId];
+}
+
 const getUsersOfConversation = convId => {
 	return conversation_users[convId];
 };
@@ -79,6 +110,7 @@ const addUserToConversation = (convId, userId) => {
 	conversation_users[convId].push(userId);
 };
 
+
 module.exports = {
 	getConnection,
 	addConnection,
@@ -89,4 +121,6 @@ module.exports = {
 	removeConnection,
 	removeConversations,
 	removeUserFromConversation,
+	userConnected,
+	userDisconnected,
 };

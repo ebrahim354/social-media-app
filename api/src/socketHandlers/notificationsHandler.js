@@ -1,4 +1,4 @@
-const { getConnection } = require('../connectionManager');
+const { getConnection } = require('../connectionManager.js');
 
 module.exports = (users, notification) => {
 	const notify = JSON.stringify({

@@ -1,6 +1,0 @@
-.env
-node_modules
-.dockerignore
-.gitignore
-package-lock.json
-/public

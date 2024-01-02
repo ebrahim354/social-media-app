@@ -11,6 +11,7 @@ const posts = require('./routes/posts');
 const auth = require('./routes/auth');
 const friends = require('./routes/friends');
 const verification = require('./routes/verifyTokenRoute');
+const conversations = require('./routes/conversations');
 // utils
 const getToken = require('./middleware/getToken');
 const { validateToken } = require('./middleware/validation');
@@ -30,6 +31,7 @@ App.use(getToken);
 App.use('/api/verifyToken', verification);
 App.use('/api/auth/', auth);
 App.use('/api/users', validateToken, users);
+App.use('/api/conversations', validateToken, conversations);
 App.use('/api/posts', validateToken, posts);
 App.use('/api/friends', validateToken, friends);
 

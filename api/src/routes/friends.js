@@ -11,7 +11,7 @@ const {
 } = require('../db/notificationService');
 
 // accept a friend request
-router.put('/acceptFriendRequest/:id', async (req, res, next) => {
+router.put('/accept-friend-request/:id', async (req, res, next) => {
 	const userId = req.body.userId;
 	const id = req.params.id;
 	if (userId === id)
@@ -29,7 +29,7 @@ router.put('/acceptFriendRequest/:id', async (req, res, next) => {
 
 // send / delete friend request to a user
 router.put(
-	'/friendRequest/:id',
+	'/friend-request/:id',
 	idValidation,
 	userIdValidation,
 	async (req, res, next) => {
@@ -41,11 +41,8 @@ router.put(
 				.send("you can't send friend request to yourself :(");
 		try {
 			const sent = await sendOrDeleteFriendRequest(userId, id);
-			if (sent) await publishSendFriendRequest(id, userId);
-			const txt = sent
-				? 'friend request has been sent'
-				: 'friend request is removed';
-			res.status(200).send(txt);
+			// if (sent) await publishSendFriendRequest(id, userId);
+			res.status(200).send(sent);
 		} catch (err) {
 			next(err);
 		}
