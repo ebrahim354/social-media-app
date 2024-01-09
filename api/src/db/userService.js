@@ -77,7 +77,12 @@ const getFullUser = async ({ username, email, id }) => {
 			)
 			from users_conversations 
 			where users_conversations.user_id = u1.id and users_conversations.seen = false
-		) as unread_conversations
+		) as unread_conversations,
+		(
+			select count(*)	
+			from notifications_users 
+			where notifications_users.user_id = u1.id and notifications_users.seen = false
+		) as unseen_notifications
     from users u1
     left join friendship f on u1.id in (f.user1_id, f.user2_id) 
     left join users u2 on (u2.id in (f.user1_id, f.user2_id) and u2.id != u1.id)

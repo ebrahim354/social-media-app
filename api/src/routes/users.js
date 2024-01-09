@@ -17,6 +17,7 @@ const {
 
 const path = require('path');
 const multer = require('multer');
+const { getUsersUnseenNotification } = require('../db/notificationService');
 const upload = multer({
 	dest: path.join(__dirname, '../../public/post'),
 });
@@ -32,6 +33,16 @@ router.get('/', async (req, res, next) => {
 		}
 		delete user.password;
 		res.status(200).json(user);
+	} catch (err) {
+		next(err);
+	}
+});
+
+router.get('/notifications', async (req, res, next) => {
+	const userId = req.body.userId;
+	try {
+		const notifications = await getUsersUnseenNotification(userId);
+		res.status(200).json(notifications);
 	} catch (err) {
 		next(err);
 	}

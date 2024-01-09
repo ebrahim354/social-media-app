@@ -49,6 +49,29 @@ const publishPostNotification = async (postId, userId, content) => {
 };
 
 
+const getUsersUnseenNotification = async (userId) => {
+  try{
+		const {
+			rows,
+		} = await query(
+			`
+        select * from notifications where id in (
+          select id 
+          from notifications_users 
+          where notifications_users.user_id = $1 ans notifications_users.seen = false
+        ) 
+      `,
+			[userId, content, postId]
+
+		);
+    console.log('notifications for user: ', rows);
+    return rows;
+  } catch(err){
+    console.log(err);
+  }
+}
+
+
 // will not be used for now.
 const publishAcceptFriendRequest = async (acceptorId, senderId) => {
 	const content = 'has accepted your friend request!';
@@ -121,4 +144,5 @@ const publishSendFriendRequest = async (receiverId, senderId) => {
 module.exports = {
 	publishPostNotification,
   notificaitonSeenByUser,
+  getUsersUnseenNotification,
 };
