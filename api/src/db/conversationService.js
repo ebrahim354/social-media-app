@@ -65,25 +65,38 @@ const getTopConversations = async userId => {
 	}
 };
 
+
+const convSeenByUser = async (userId,conversationId) => {
+	try {
+		await query(
+			`
+			update users_conversations set seen = true where user_id = $1 and conversation_id = $2;
+    `,
+			[userId, conversationId]
+		);
+	} catch (err) {
+		console.log(err);
+	}
+};
+
+
 const getOneConversation = async (conversationId) => {
 	try {
 		const { rows: conversation } = await query(
 			`
-    select c.*,
-		coalesce (array_agg(
-			json_build_object
-			('author', m.author_id, 'content', m.content, 'createdAt', m.created_at, 
-			'updatedAt', m.updated_at, 'id', m.id)
-		) filter(where m.id is not null), '{}') messages,
-		(
-			select array_agg(uc.user_id) from users_conversations uc where uc.conversation_id = c.id
-		) as users
-		from conversations c
-		left join messages m on c.id = m.conversation_id
-		left join users_conversations uc on c.id = uc.conversation_id 
-		left join users u on uc.user_id = u.id
-		where c.id = $1
-		group by c.id
+			select c.*,
+			coalesce (array_agg(
+				json_build_object
+				('author', m.author_id, 'content', m.content, 'createdAt', m.created_at, 
+				'updatedAt', m.updated_at, 'id', m.id)
+			) filter(where m.id is not null), '{}') messages,
+			(
+				select array_agg(uc.user_id) from users_conversations uc where uc.conversation_id = c.id
+			) as users
+			from conversations c
+			left join messages m on c.id = m.conversation_id
+			where c.id = $1
+			group by c.id
     `,
 			[conversationId]
 		);
@@ -113,24 +126,38 @@ const getConnectedUsers = async userId => {
 	}
 };
 
-const addMessage = async (senderId, receiverId, content) => {
-	console.log('senderId', senderId, 'rec id', receiverId, 'cont', content);
+const addMessage = async (userId, conversationId, content) => {
+	console.log(userId, conversationId, content);
 	try {
-		const { rows: message } = await query(
-			
-			`with conv as (select id from conversations where $1 in 
-				(user1_id, user2_id) and $2 in (user1_id, user2_id))
-			insert into messages(author_id, conversation_id, content) select
-			$1, conv.id, '${content}' from conv returning *;
+		const { rows: messages } = await query(
+			`
+			with msg as 
+			(
+				insert into messages(author_id, conversation_id, content) values($1, $2, $3) returning * 
+			), conv_users as 
+			(
+				update users_conversations set seen = FALSE where conversation_id = $2 and user_id != $1 returning user_id
+			)
+			select *, 
+			(
+				select array_agg(user_id) from conv_users
+			) as users
+			from msg;
 		`,
-			[senderId, receiverId]
+			[userId, conversationId, content]
 		);
-		message[0].author = message[0].author_id;
-		return message[0];
+		console.log('yo addMessage call: ', messages);
+		messages[0].author = messages[0].author_id;
+		messages[0].createdAt = messages[0].created_at;
+		return messages[0];
 	} catch (err) {
 		console.log(err);
 	}
 };
+
+
+
+
 
 const startConversation = async (userIds) => {
 	const client = await pool.connect();
@@ -149,7 +176,7 @@ const startConversation = async (userIds) => {
 			if(i!= userIds.length) idsStr+= ',';
 		}
 
-		const { _ } = await client.query(`
+		await client.query(`
 			insert into users_conversations values ${idsStr};
 		`, [...userIds]);
 		await client.query(`commit`);
@@ -158,6 +185,8 @@ const startConversation = async (userIds) => {
 	} catch (err) {
 		await client.query(`rollback`);
 		console.log(err);
+	} finally {
+		client.release();
 	}
 };
 
@@ -170,4 +199,5 @@ module.exports = {
 	getUsersOfConversations,
 	startConversation,
 	getOneConversation,
+	convSeenByUser,
 };

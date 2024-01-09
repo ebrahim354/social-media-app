@@ -38,16 +38,51 @@ const getFullUser = async ({ username, email, id }) => {
 	const {
 		rows: [user],
 	} = await query(
-		`select u1.*, u1.profile_picture as "profilePicture", u1.cover_picture as "coverPicture",
-    coalesce (array_agg(json_build_object('id', u2.id, 'username', u2.username, 'profilePicture', u2.profile_picture)) 
-    filter (where u2.username is not null), '{}') friends,
-    coalesce (array_agg(json_build_object('id', u3.id, 'username', u3.username, 'profilePicture', u3.profile_picture)) 
-    filter (where u3.username is not null), '{}') friendRequests
+		`
+		select u1.*, u1.profile_picture as "profilePicture", u1.cover_picture as "coverPicture",
+    coalesce 
+		(
+			array_agg
+			(
+				json_build_object
+				(
+					'id', u2.id, 
+					'username', u2.username, 
+					'profilePicture', u2.profile_picture, 
+					'conversation_id', f.private_conversation_id
+				)
+			) 
+    	filter (where u2.username is not null), '{}'
+		) friends,
+		(
+			select 
+			coalesce 
+			(
+				array_agg
+				(
+					json_build_object('id', u3.id, 'username', u3.username, 'profilePicture', u3.profile_picture)
+				) 
+				filter (where u3.username is not null), '{}'
+			)  
+			from friend_request
+			join users u3 on friend_request.sender = u3.id 
+			where friend_request.receiver = u1.id
+		) as friendrequests,
+		(
+			select 
+			coalesce
+			(
+				array_agg(conversation_id) 
+    		filter (where users_conversations.user_id is not null), '{}'
+			)
+			from users_conversations 
+			where users_conversations.user_id = u1.id and users_conversations.seen = false
+		) as unread_conversations
     from users u1
     left join friendship f on u1.id in (f.user1_id, f.user2_id) 
     left join users u2 on (u2.id in (f.user1_id, f.user2_id) and u2.id != u1.id)
-    left join friend_request f2 on u1.id = f2.receiver 
-    left join users u3 on f2.sender = u3.id ${filter.where} group by u1.id`,
+    ${filter.where} 
+		group by u1.id`,
 		[filter.val]
 	);
 	return user;

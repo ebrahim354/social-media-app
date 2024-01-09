@@ -56,23 +56,25 @@ module.exports = async (userId, connection) => {
 	if (getConnection(userId) && getConnection(userId).state != 'closed') return;
 	addConnection(userId, connection);
 	const friends = await getFriends(userId);
-	const onlineFriends = friends.filter(f => !!getConnection(f));
-	console.log('online friends: ', friends, userId);
+	const onlineFriendsWithConvId = friends.filter(f => !!getConnection(f.id));
+	const onlineFriends = onlineFriendsWithConvId.map(f => f.id);
+	console.log('online friends: ', onlineFriendsWithConvId, userId);
 	userConnected(userId, onlineFriends);
 	connection.send(
 		JSON.stringify({
 			method: 'INIT',
 			data: {
-				onlineFriends,
+				"onlineFriends" :onlineFriendsWithConvId,
 			}
 		})
 	);
-	onlineFriends.map(friend => {
-		getConnection(friend).send(
+	onlineFriendsWithConvId.map(({id, conversationId}) => {
+		getConnection(id).send(
 			JSON.stringify({
 				method: 'USER_JOINED',
 				data: {
-					userId,
+					"id": userId,
+					conversationId,	
 				},
 			})
 		);

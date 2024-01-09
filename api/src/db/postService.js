@@ -35,7 +35,7 @@ const createPost = async ({ description, userId, img }) => {
 		await client.query(`rollback`);
 		throw new Error('Invalid input');
 	} finally {
-		await client.release();
+		client.release();
 	}
 };
 
@@ -64,7 +64,7 @@ const postQuery = async (filter, params) => {
 			`
       select p.*, 
       json_build_object('id', author.id, 'username', author.username, 'profilePicture', author.profile_picture) as author,
- 				(
+ 			(
 				select array_agg(pl.user_id) from 
 				post_likes pl
 				where pl.post_id = p.id and pl.liked = true

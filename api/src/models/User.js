@@ -23,6 +23,7 @@ const friendship_columns = [
 	'user2_id INT REFERENCES users(id) ON DELETE CASCADE',
 	'PRIMARY KEY (user1_id, user2_id)',
 	'created_at timestamp not null default now()',
+	'private_conversation_id INT REFERENCES conversations(id) ON DELETE CASCADE'
 ];
 
 // friend_request schema

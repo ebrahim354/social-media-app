@@ -20,7 +20,7 @@ router.put('/accept-friend-request/:id', async (req, res, next) => {
 			.send("you can't accept friend requests from yourself");
 	try {
 		await acceptFriendRequest(userId, id);
-		await publishAcceptFriendRequest(userId, id);
+		console.log('friend request accepted :)');
 		res.status(200).send('friend request accepted');
 	} catch (err) {
 		next(err);
@@ -41,6 +41,7 @@ router.put(
 				.send("you can't send friend request to yourself :(");
 		try {
 			const sent = await sendOrDeleteFriendRequest(userId, id);
+			console.log('friend request sent :)', sent);
 			// if (sent) await publishSendFriendRequest(id, userId);
 			res.status(200).send(sent);
 		} catch (err) {

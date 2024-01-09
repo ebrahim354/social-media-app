@@ -1,6 +1,7 @@
 const { query } = require('../index');
 
-const areFriends = async (user1, user2) => {
+const areFriends = async (user1, user2, client = null) => {
+	if(client && !client.query) throw new Error('Invalid database client');
 	const { rows } = await query(
 		`select * from friendship where user1_id in ($1, $2) and user2_id in ($1, $2)`,
 		[user1, user2]
@@ -8,7 +9,8 @@ const areFriends = async (user1, user2) => {
 	return rows.length;
 };
 
-const requestSent = async (user1, user2, orderMaters = false) => {
+const requestSent = async (user1, user2, orderMaters = false, client = null) => {
+	if(client && !client.query) throw new Error('Invalid database client');
 	let l = 0;
 	if(orderMaters){
 		const { rows } = await query(

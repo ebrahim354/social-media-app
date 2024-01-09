@@ -1,10 +1,26 @@
 const { pool, query } = require('../db');
-const client = require('../NotificationPublisher');
+const {sendNotification} = require('../socketHandlers/notificationsHandler');
+
+
+
+const notificaitonSeenByUser = async (userId,notificationId) => {
+	try {
+		await query(
+			`
+			update  notifications_users set seen = true where user_id = $1 and notification_id = $2;
+    `,
+			[userId, notificationId]
+		);
+	} catch (err) {
+		console.log(err);
+	}
+};
+
 
 const publishPostNotification = async (postId, userId, content) => {
 	try {
 		const {
-			rows: [users],
+			rows,
 		} = await query(
 			`
       with "user" as(
@@ -23,18 +39,21 @@ const publishPostNotification = async (postId, userId, content) => {
       `,
 			[userId, content, postId]
 		);
+    const subscribers = rows.map(item => item.user_id);
+    sendNotification(postId, userId, content, subscribers);
 
-		const message = { users, content };
-		await client.publish('NOTIFICATIONS', JSON.stringify(message));
 	} catch (err) {
 		console.log('notifications', err);
 		throw new Error('something wrong happened!');
 	}
 };
+
+
+// will not be used for now.
 const publishAcceptFriendRequest = async (acceptorId, senderId) => {
 	const content = 'has accepted your friend request!';
 	try {
-		await query(
+		const {rows} = await query(
 			`
       with "request" as(
         select 
@@ -56,9 +75,9 @@ const publishAcceptFriendRequest = async (acceptorId, senderId) => {
       `,
 			[senderId, acceptorId]
 		);
+    console.log('rows: ', rows[0]);
 		const users = [acceptorId, senderId];
 		const message = { users, content };
-		await client.publish('NOTIFICATIONS', JSON.stringify(message));
 	} catch (err) {
 		console.log('notifications', err);
 		throw new Error('something wrong happened!');
@@ -101,6 +120,5 @@ const publishSendFriendRequest = async (receiverId, senderId) => {
 
 module.exports = {
 	publishPostNotification,
-	publishAcceptFriendRequest,
-	publishSendFriendRequest,
+  notificaitonSeenByUser,
 };

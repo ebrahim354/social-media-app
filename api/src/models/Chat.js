@@ -17,6 +17,7 @@ const conversations_columns = [
 const users_conversations_columns = [
 	'user_id INT REFERENCES users(id) ON DELETE CASCADE',
 	'conversation_id INT REFERENCES conversations(id) ON DELETE CASCADE',
+	'seen BOOLEAN DEFAULT TRUE',
 	'primary key (user_id, conversation_id)',
 ];
 

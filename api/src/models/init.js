@@ -5,8 +5,13 @@ const notifications = require('./Notification');
 
 const operations = [
 	users.createUsersTable,
+	chats.createConversationsTable,
+
 	users.createFriendRequetsTable,
 	users.createFiendshipTable,
+
+	chats.createMessagesTable,
+	chats.createUsersConversationsTable,
 
 	posts.createPostsTable,
 	posts.createPostLikesTable,
@@ -14,9 +19,6 @@ const operations = [
 	posts.cerateCommentLikesTable,
 	posts.createPostsSubscibersTable,
 
-	chats.createConversationsTable,
-	chats.createMessagesTable,
-	chats.createUsersConversationsTable,
 
 	notifications.createNotificationsTable,
 	notifications.createNotificationsUsersTable,
