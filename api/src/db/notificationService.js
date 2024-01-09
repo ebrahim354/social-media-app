@@ -55,14 +55,22 @@ const getUsersUnseenNotification = async (userId) => {
 			rows,
 		} = await query(
 			`
-        select * from notifications where id in (
-          select id 
-          from notifications_users 
-          where notifications_users.user_id = $1 ans notifications_users.seen = false
-        ) 
-      `,
-			[userId, content, postId]
 
+        with notes as (
+			    update notifications_users set seen = true where user_id = $1 and notification_id in
+          (
+            select notification_id 
+            from notifications_users 
+            where notifications_users.user_id = $1 and notifications_users.seen = false
+          ) returning notification_id as id
+        )
+        select * from notifications 
+        where id in 
+        ( 
+          select id from notes
+        );
+      `,
+			[userId]
 		);
     console.log('notifications for user: ', rows);
     return rows;

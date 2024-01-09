@@ -1,5 +1,4 @@
 const { getConnection } = require('../connectionManager.js');
-const {notificaitonSeenByUser} = require('../db/notificationService.js');
 
 const sendNotification = (publisherId, authorId, content, subscribers) => {
 	const notify = JSON.stringify({
@@ -18,12 +17,8 @@ const sendNotification = (publisherId, authorId, content, subscribers) => {
 };
 
 
-const notificationSeen = async (userId, notificationId) => {
-	await notificaitonSeenByUser(userId, notificationId);
-}
 
 
 module.exports = {
 	sendNotification,
-	notificationSeen,
 }

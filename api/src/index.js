@@ -8,7 +8,6 @@ const server = http.createServer(App);
 const webSocketServer = require('websocket').server;
 const messageHandler = require('./socketHandlers/messageHandler');
 const initHandler = require('./socketHandlers/initHandler');
-const {notificationSeen} = require('./socketHandlers/notificationsHandler');
 const verifyToken = require('./utils/verifyToken');
 const openConvHandler = require('./socketHandlers/openConvHandler');
 
@@ -51,8 +50,6 @@ const main = async () => {
 						userId,
 						req.data.conversationId
 					);
-				} else if(req.method == 'NOTIFICATION_SEEN'){
-					await notificationSeen(userId, req.data.notificationId);
 				}
 			} catch (err) {
 				console.log(err);
