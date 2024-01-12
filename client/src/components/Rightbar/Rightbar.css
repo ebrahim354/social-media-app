@@ -1,0 +1,99 @@
+.rightbar {
+	background-color: white;
+	flex: 3;
+	color: black;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	overflow-y: scroll;
+	position: sticky;
+	top: 50px;
+	left: 0;
+}
+
+.rightbarWrapper {
+	position: sticky;
+	padding: 5px;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.rightbarHeader {
+	margin: 15px 0;
+}
+
+.rightbarWrapper hr {
+	margin: 20px 0;
+}
+
+.onlineFriendsItem {
+	margin: 10px 0;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	border-radius: 5px;
+	justify-content: space-between;
+}
+
+.friendLeftSide {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+
+.onlineFriendsImgWrapper {
+	position: relative;
+	margin: 0 10px 0 0;
+}
+
+.isOnlineAlert {
+	background-color: #090;
+	width: 12px;
+	height: 12px;
+	border: solid 1px white;
+	border-radius: 50%;
+	position: absolute;
+	top: 0;
+	right: -2px;
+}
+
+.onlineFriendsImgWrapper img {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+.onlineFriendName {
+	font-size: 1.1rem;
+	font-weight: bold;
+}
+
+
+.rightbarIcons {
+	width: 50%;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+}
+
+.rightbarIcon {
+	cursor: pointer;
+	margin-right: 15px;
+	position: relative;
+}
+
+.rightbarIconAlert {
+	width: 15px;
+	height: 15px;
+	color: white;
+	font-size: 0.9rem;
+	text-align: center;
+	border-radius: 50%;
+	position: absolute;
+	top: 0;
+	right: -5px;
+	background-color: red;
+}

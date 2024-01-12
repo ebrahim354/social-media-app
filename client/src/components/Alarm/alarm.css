@@ -1,0 +1,15 @@
+.alarmContainer {
+	background-color: lightcoral;
+	width: fit-content;
+	height: 40px;
+	border: 1px solid black;
+	color: white;
+	font-size: 1.1rem;
+	font-weight: bold;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 10px 20px;
+	margin-bottom: 10px;
+	border-radius: 5px;
+}

@@ -1,0 +1,193 @@
+.post {
+	width: 100%;
+	border-radius: 10px;
+	box-shadow: 0px 0px 16px -8px rgba(0, 0, 0, 0.68);
+	margin-top: 30px;
+}
+
+.postWrapper {
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	width: 100%;
+}
+
+.postHeader {
+	/* padding: 0 10px; */
+	flex: 1.5;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+.postImgContainer {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	height: 100%;
+}
+
+.postImgContainer img {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	object-fit: cover;
+	margin-right: 10px;
+}
+
+.postTime {
+	font-size: 0.8rem;
+	font-style: italic;
+	font-weight: bold;
+	color: #666;
+}
+
+.postAuthor {
+	font-size: 1.1rem;
+	font-weight: bold;
+	margin-right: 10px;
+}
+
+.postContent {
+	padding: 10px 0;
+	flex: 7;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.postContent img {
+	width: 100%;
+	margin-top: 20px;
+	object-fit: contain;
+	max-height: 500px;
+}
+.postFooter {
+	flex: 1.5;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.postFooter span {
+	cursor: pointer;
+}
+
+.postFooter span:hover {
+	color: #1877f2;
+}
+
+.postFooterContainer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	text-align: center;
+}
+
+.postFooterLike {
+	width: 20px;
+	height: 20px;
+	margin-right: 5px;
+	cursor: pointer;
+}
+
+.postCommentsContainer {
+	background-color: #fafafa;
+	list-style: none;
+	padding: 40px 20px;
+}
+
+.postComment {
+	display: flex;
+	flex-direction: row;
+}
+
+.postCommentUserImgContainer {
+	display: flex;
+	flex-direction: row;
+	height: 100%;
+}
+
+.postCommentUserImgContainer img {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	object-fit: cover;
+	margin-right: 10px;
+}
+
+.postCommentRight {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.postCommentMain {
+	flex: 1.5;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	background-color: #f1f1f1;
+	border-radius: 20px;
+	padding: 10px;
+	max-width: 100%;
+}
+
+.postCommentContent {
+	font-size: 15px;
+	max-width: 400px;
+	height: 100%;
+	overflow: hidden;
+}
+
+.postCommentFooter {
+	flex: 1.5;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.postCommentFooterContainer {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.postFooterLike {
+	width: 20px;
+	height: 20px;
+	margin-right: 5px;
+	cursor: pointer;
+}
+.postCommentTime {
+	font-size: 0.8rem;
+	font-style: italic;
+	font-weight: bold;
+	color: #666;
+}
+
+.postCommentAuthor {
+	font-size: 1.1rem;
+	font-weight: bold;
+	margin-right: 10px;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+/* .postFooterContainer img {
+	width: 20px;
+	height: 20px;
+	margin-right: 5px;
+} */
+.dropDownMenu {
+	cursor: pointer;
+	color: #666;
+}
+
+.readMore {
+	color: #1877f2;
+	cursor: pointer;
+}

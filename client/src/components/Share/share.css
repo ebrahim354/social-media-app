@@ -1,0 +1,77 @@
+.shareContainer {
+	width: 100%;
+	height: 100%;
+	max-height: 50%;
+	border-radius: 10px;
+	box-shadow: 0px 0px 16px -8px rgba(0, 0, 0, 0.68);
+}
+
+.shareForm {
+	width: 100%;
+	max-height: 100%;
+	padding: 10px;
+}
+
+.shareIcons {
+	font-size: 18px;
+}
+
+.shareHr {
+	margin: 20px 5px;
+}
+
+.shareBottomWrapper {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+	align-items: center;
+	height: 40%;
+}
+
+.shareOption {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	cursor: pointer;
+}
+
+.sharePhotoChooseFile {
+	display: none;
+}
+.uploadedImgContainer {
+	max-height: 250px;
+	overflow: hidden;
+	position: relative;
+}
+.uploadedImgContainer img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+.removeUploadedImg {
+	position: absolute;
+	top: 0;
+	right: 0;
+	background-color: grey;
+	border-radius: 50%;
+	cursor: pointer;
+}
+
+.shareOption span {
+	margin-left: 5px;
+	font-size: 14px;
+	font-weight: bold;
+}
+
+.shareButton {
+	width: 50px;
+	background-color: #090;
+	border: none;
+	padding: 7px;
+	border-radius: 5px;
+	color: white;
+	cursor: pointer;
+	height: 30px;
+	text-align: center;
+}

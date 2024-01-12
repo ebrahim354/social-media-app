@@ -1,0 +1,171 @@
+/* general */
+.messenger {
+	display: flex;
+	flex-direction: column;
+	max-width: 500px;
+	height: 100%;
+}
+
+/* middle portion */
+.messengerMiddle {
+	height: 100%;
+	flex: 100%;
+	display: flex;
+	flex-direction: column;
+	padding: 10px;
+	padding-top: 20px;
+}
+
+.messengerMiddleSpace {
+	overflow-y: scroll;
+	width: 100%;
+	height: 80%;
+	display: flex;
+	flex-direction: column;
+	list-style: none;
+	padding: 10px;
+}
+
+.messageContainer {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: 65px;
+	margin-bottom: 10px;
+}
+
+.leftMessage {
+	display: flex;
+	width: 100%;
+	height: 100%;
+	flex-direction: row;
+	align-items: center;
+	border-radius: 10px;
+	padding: 3px;
+	/* justify-content: center; */
+}
+
+.leftMessage .messageContent {
+	height: 70%;
+	padding: 20px;
+	background-color: #eee;
+	width: auto;
+	color: black;
+	border-radius: 50px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.rightMessage {
+	display: flex;
+	width: 100%;
+	height: 100%;
+	align-items: center;
+	justify-content: right;
+	flex-direction: row-reverse;
+	border-radius: 10px;
+	padding: 3px;
+}
+
+.rightMessage .messageContent {
+	height: 70%;
+	padding: 20px;
+	background-color: blue;
+	width: auto;
+	color: white;
+	border-radius: 50px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.leftMessage .messageImg {
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	object-fit: cover;
+	margin-right: 10px;
+}
+
+.rightMessage .messageImg {
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	object-fit: cover;
+	margin-left: 10px;
+}
+
+.messageTimeLeft {
+	font-size: 0.8rem;
+	font-style: italic;
+	font-weight: bold;
+	color: #666;
+}
+
+.messageTimeRight {
+	font-size: 0.8rem;
+	font-style: italic;
+	font-weight: bold;
+	color: #666;
+	text-align: right;
+}
+
+.sendMessageForm {
+	height: 20%;
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	padding: 15px;
+}
+
+.sendMessageInput {
+	height: 100%;
+	width: 80%;
+	padding: 0 10px;
+	border-radius: 10px;
+	border: none;
+}
+
+.sendMessageInput:focus {
+	outline: none;
+}
+
+.sendMessageButtonActive {
+	width: 70px;
+	background-color: #090;
+	font-weight: bold;
+	font-size: 1.1rem;
+	border: none;
+	padding: 5px;
+	margin: 5px;
+	border-radius: 50px;
+	color: white;
+	cursor: pointer;
+	height: 40px;
+	text-align: center;
+}
+
+.sendMessageButtonPassive {
+	width: 70px;
+	background-color: #0f0;
+	font-weight: bold;
+	font-size: 1.1rem;
+	border: none;
+	padding: 5px;
+	margin: 5px;
+	border-radius: 50px;
+	color: white;
+	height: 40px;
+	text-align: center;
+}
+
+/* right portion */
+.massengerRight {
+	flex: var(--rightSide-width);
+	height: 100%;
+	padding: 20px;
+	overflow-y: scroll;
+}

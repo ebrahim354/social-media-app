@@ -1,0 +1,25 @@
+.textInputWrapper {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	height: 40%;
+	align-items: center;
+}
+
+.textInputWrapper input {
+	width: 100%;
+	height: 100%;
+	border: none;
+}
+
+.textInputWrapper input:focus {
+	outline: none;
+}
+
+.textInputWrapper img {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	margin-right: 10px;
+	object-fit: cover;
+}
