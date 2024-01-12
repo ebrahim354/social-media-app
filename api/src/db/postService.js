@@ -87,7 +87,7 @@ const postQuery = async (filter, params) => {
       join users author on  p.author = author.id
 			${filter}
 		`,
-			params
+			[...params]
 		);
 		for (post of rows) {
 			if (post.likes === null) post.likes = [];
@@ -118,17 +118,18 @@ const getUserPosts = async userId => {
 const getTimeLine = async userId => {
 	const posts = await postQuery(
 		`
-			where p.author = $1 or p.author in (
+			where p.author in (
 				select 
 				case  
-					when user1_id = p.author then user2_id 
-					when user2_id = p.author then user1_id
+					when user1_id = $1 then user2_id 
+					when user2_id = $1 then user1_id
 				end
-				from friendship where p.author in (user1_id, user2_id)
+				from friendship where $1 in (user1_id, user2_id)
 			)
 	`,
 		[userId]
 	);
+	console.log('timelineposts: ', posts);
 	return posts;
 };
 

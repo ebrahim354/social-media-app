@@ -24,9 +24,7 @@ router.post('/register', async (req, res, next) => {
 			email: data.email,
 		});
 		const token = createToken(dbUser.id);
-		delete dbUser.password;
 		res.status(200).json({
-			user: dbUser,
 			token,
 		});
 	} catch (err) {
@@ -58,10 +56,8 @@ router.post('/login', async (req, res, next) => {
 			res.status(400).send('invalid username or password');
 			return;
 		}
-		delete user.password;
 		const token = createToken(user.id);
 		res.status(200).json({
-			user,
 			token,
 		});
 	} catch (err) {

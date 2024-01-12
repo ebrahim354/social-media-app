@@ -5,10 +5,10 @@ const { setInterval } = require('timers');
 // "user_conversations" maps a user id into his current array of top conversations.
 // "conversation_users" maps conversations id to the current array of connected users.
 
-const user_connection = {};
-const user_onlineFriends = {};
-const user_conversations = {};
-const conversation_users = {};
+const user_connection = new Map();
+const user_onlineFriends = new Map();
+const user_conversations = new Map();
+const conversation_users = new Map();
 
 const clearCache = () => {
 	console.log('clearing cache'); 	
@@ -40,7 +40,7 @@ const clearCache = () => {
 	}
 };
 
-setInterval(clearCache, 100000);
+setInterval(clearCache, 50000);
 
 const getConnection = userId => {
 	return user_connection[userId];
