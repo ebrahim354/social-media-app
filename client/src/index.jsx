@@ -1,14 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import App from './App.jsx';
 import UserProvider from './context/UserContext';
 import SelectedConversationProvider from './context/selectedConversation';
-import App from './App';
+
 
 ReactDOM.render(
+    <React.StrictMode>
 	<UserProvider>
 			<SelectedConversationProvider>
 				<App />
 			</SelectedConversationProvider>
-	</UserProvider>,
-	document.getElementById('root')
+	</UserProvider>
+    </React.StrictMode>,
+document.getElementById('root')
 );

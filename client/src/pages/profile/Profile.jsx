@@ -11,6 +11,7 @@ export default function Profile({cachedConversations, setCachedConversations}) {
 	const token = window.localStorage.getItem('jwt');
 	const { user } = useContext(userContext);
 	console.log('yo came here', id, user);
+    if(window.innerWidth < 900 || window.outerWidth < 500)  return <SmallScreen />
 	if(token && !user) return (<>Loading...</>);
 	else {
 		return(

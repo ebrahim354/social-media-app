@@ -140,6 +140,7 @@ const Topbar = () => {
 
 	const profilePictureClick = () => {
 		history.push('/profile');
+		window.location.reload();
 	};
 	
 	const gotoProfile = id => {

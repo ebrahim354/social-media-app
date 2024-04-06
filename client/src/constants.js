@@ -1,2 +1,3 @@
-export const defaultAvatar = 'http://localhost:3000/person/noAvatar.png';
-export const defaultCover = 'http://localhost:3000/person/noCover.png';
+const backEndUrl = 'http://localhost:5000/';
+export const defaultAvatar = backEndUrl+'public/person/noAvatar.png';
+export const defaultCover =  backEndUrl+'public/person/noCover.png';

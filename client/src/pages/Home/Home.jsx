@@ -27,6 +27,7 @@ const Home = ({cachedConversations, setCachedConversations}) => {
 			});
 	}, [user]);
 
+    if(window.innerWidth < 900 || window.outerWidth < 500)  return <SmallScreen />
 	if (!user) {
 		return <div>loading...</div>;
 	}
