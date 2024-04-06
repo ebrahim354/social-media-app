@@ -11,7 +11,7 @@ export const setPostToken = newToken => {
 };
 
 export const fetchTimeline = () => {
-	return axios.get(url + baseRoute, config).then(res => res.data);
+	return axios.get(url + baseRoute, config);
 };
 
 export const fetchUserPosts = userId => {

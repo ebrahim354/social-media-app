@@ -17,7 +17,7 @@ const Home = ({cachedConversations, setCachedConversations}) => {
 		fetchTimeline()
 			.then(res => {
 				console.log(res);
-				setTimeline(res.data.timeline);
+				setTimeline(res.data.data.timeline);
 				console.log('time line is set!');
 			})
 			.catch(err => {

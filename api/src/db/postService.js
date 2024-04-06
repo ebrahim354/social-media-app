@@ -125,7 +125,7 @@ const getTimeLine = async userId => {
 					when user2_id = $1 then user1_id
 				end
 				from friendship where $1 in (user1_id, user2_id)
-			)
+			) or p.author = $1
 	`,
 		[userId]
 	);
