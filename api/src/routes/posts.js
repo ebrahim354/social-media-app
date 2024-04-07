@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const { BUCKET } = require('../utils/config');
 const {
 	userIdValidation,
 	validatePost,
@@ -19,8 +20,28 @@ const {
 } = require('../db/postService');
 const { publishPostNotification } = require('../db/notificationService');
 const path = require('path');
+
+const { S3Client, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+const s3 = new S3Client();
+const MulterS3 = require('multer-s3');
+
+const multerS3 = BUCKET ? MulterS3({
+    s3: s3,
+    bucket: BUCKET ,
+    key: function (req, file, cb) {
+      console.log('filename', file.originalname);
+      const imgPath = Date.now() + file.originalname;
+      req.body.img = imgPath;
+      cb(null, imgPath);
+    }
+  }) : null;
+
+
+
+
 const upload = multer({
-	dest: path.join(__dirname, '../../public/post'),
+    storage: BUCKET ? multerS3 : null,
+    dest: BUCKET ? null : path.join(__dirname, "../../public/post"),
 });
 
 //create a post
@@ -126,6 +147,13 @@ router.delete('/:id', async (req, res, next) => {
 	const userId = req.body.userId;
 	try {
 		result = await deletePost(postId, userId);
+        if(result){
+            const input = {
+                Bucket: BUCKET,
+                Key: product.image,
+            }
+            await s3.send(new DeleteObjectCommand(input));
+        }
 		res.status(200).json({
 			data: {
 				result,

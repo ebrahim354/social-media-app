@@ -1,12 +1,15 @@
 const router = require('express').Router();
+const { BUCKET } = require('../utils/config');
 const bcrypt = require('bcrypt');
+const multer = require('multer');
 const {
 	getFullUser,
 	updateUser,
 	deleteUser,
 	getSimpleUser,
-	getUsersWithUsername
+	getUsersWithUsername,
 } = require('../db/userService');
+const { getUsersUnseenNotification } = require('../db/notificationService.js');
 
 const { getUserPosts } = require('../db/postService');
 const {
@@ -16,10 +19,25 @@ const {
 } = require('../middleware/validation');
 
 const path = require('path');
-const multer = require('multer');
-const { getUsersUnseenNotification } = require('../db/notificationService');
+
+const { S3Client, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+const s3 = new S3Client();
+const MulterS3 = require('multer-s3');
+
+const multerS3 = BUCKET ? MulterS3({
+    s3: s3,
+    bucket: BUCKET ,
+    key: function (req, file, cb) {
+      console.log('filename', file.originalname);
+      const imgPath = Date.now() + file.originalname;
+      req.body.img = imgPath;
+      cb(null, imgPath);
+    }
+  }) : null;
+
 const upload = multer({
-	dest: path.join(__dirname, '../../public/post'),
+  storage: BUCKET ? multerS3 : null,
+  dest: BUCKET ? null : path.join(__dirname, "../../public/post"),
 });
 
 //get the user on the token (data for login)

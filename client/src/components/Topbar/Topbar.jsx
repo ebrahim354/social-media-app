@@ -18,6 +18,7 @@ const NotificationList = () => {
 
 	useEffect(() => {
 		document.addEventListener(socketEvents.notificationSent, (e) => {
+            console.log(e);
 			setRequestSent(false);
 			setCurUnseen(curUnseen+1);
 		});
@@ -45,7 +46,7 @@ const NotificationList = () => {
 			{!closed &&
 				<div className='friendRequestList'>
 					{!!notifications.length && notifications.map(note => (
-					<li className='friendRequestItem' key={note.name}>
+					<li className='friendRequestItem' key={note.id}>
 						<div className='friendRequestImgWrapper' >
 							<img
 								src={note.img || defaultAvatar}

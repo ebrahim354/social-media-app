@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const verifyToken = require('../utils/verifyToken');
+const { BUCKET } = require('../utils/config');
 
 const idValidation = (req, res, next) => {
 	if (!req.params.id) {
@@ -38,6 +39,8 @@ const validateImg = (req, res, next) => {
 		error.name = 'ValidationError';
 		return next(error);
 	}
+    // if we are using s3 return don't save to the local file system.
+    if(BUCKET) return next();
 	// vallidate and save the img if there is any
 	const tmpPath = req.file.path;
 	const imgPath = path.join(
@@ -68,7 +71,7 @@ const validatePost = (req, res, next) => {
 		return next(error);
 	}
 	// vallidate and save the img if there is any
-	if (req.file) {
+	if (req.file && !BUCKET) {
 		const tmpPath = req.file.path;
 		const imgPath = path.join(
 			'/public/post',
