@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon ./src/index.js",
+    "dev": "nodemon ./src/index.js",
+    "start": "node ./src/index.js",
     "test": "NODE_ENV=test jest --verbose --runInBand",
     "test:auth": "NODE_ENV=test jest ./src/tests/auth.test.js --verbose --runInBand",
     "test:posts": "NODE_ENV=test jest ./src/tests/posts.test.js --verbose --runInBand",
