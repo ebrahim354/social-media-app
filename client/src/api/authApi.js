@@ -2,8 +2,9 @@ import axios from 'axios';
 import { setUserToken } from './userApi';
 import { setPostToken } from './postsApi';
 import { setMassengerToken } from './massengerApi';
+import { backEndURL } from '../constants.js';
 
-const url = 'http://localhost:5000';
+const url = backEndURL;
 const authRoute = '/api/auth';
 
 export const register = (credentials) => {

@@ -1,4 +1,5 @@
-const SOCKET_URL = 'ws://localhost:5000';
+import {socketURL} from '../constants.js';
+const SOCKET_URL = socketURL;
 export let ws = null;
 let token = null;
 export let socketEvents =  {

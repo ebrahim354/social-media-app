@@ -20,6 +20,7 @@ const App = () => {
 	const [ cachedConversations, setCachedConversations ] = useState({});
 	useEffect(() => {
 		const token = window.localStorage.getItem('jwt');
+        console.log(import.meta.env.VITE_BACK_END_URL);
 		console.log('hey token', token)
 		if (token) {
 			setUserToken(token);

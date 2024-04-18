@@ -1,3 +1,4 @@
-const backEndUrl = 'http://localhost:5000/';
-export const defaultAvatar = backEndUrl+'public/person/noAvatar.png';
-export const defaultCover =  backEndUrl+'public/person/noCover.png';
+export const defaultAvatar = 'public/person/noAvatar.png';
+export const defaultCover =  'public/person/noCover.png';
+export const backEndURL = import.meta.env.VITE_BACK_END_URL;
+export const socketURL = import.meta.env.VITE_SOCKET_URL;

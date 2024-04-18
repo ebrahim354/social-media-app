@@ -1,6 +1,7 @@
 import axios from 'axios';
+import {backEndURL} from '../constants.js';
 
-const url = 'http://localhost:5000';
+const url = backEndURL;
 const baseRoute = '/api/posts';
 const baseUserRoute = '/api/users';
 const config = {
