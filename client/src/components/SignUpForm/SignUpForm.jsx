@@ -33,7 +33,10 @@ export default function SignUpForm({ setShow }) {
 				password,
 				email,
 			},
-		).catch(err => {
+		).then(() => {
+		    history.push('/');
+            window.location.reload();
+        }).catch(err => {
 			setError(err.response.data);
 		});
 	};

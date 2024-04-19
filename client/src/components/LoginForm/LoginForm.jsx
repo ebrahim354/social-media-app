@@ -29,6 +29,7 @@ export default function LoginForm({ setShow }) {
 				email: isEmail(usernameOrEmail) ? usernameOrEmail : null,
 			}
 		).then(() => {
+		    history.push('/');
 			window.location.reload();
 		}).catch(err => {
 			setError("An unkown error has happened!");
@@ -57,7 +58,7 @@ export default function LoginForm({ setShow }) {
 				<button className='loginSubmit' type='submit'>
 					Log in
 				</button>
-				<a href='http://www.yourmom.com'>Forgot password?</a>
+				<a href='#'>Forgot password?</a>
 				<button
 					className='loginCreateAccount'
 					type='button'
