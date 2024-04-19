@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const verifyToken = require('../utils/verifyToken');
-const { BUCKET } = require('../utils/config');
+const { BUCKET, MY_URL} = require('../utils/config');
 
 const idValidation = (req, res, next) => {
 	if (!req.params.id) {
@@ -58,7 +58,7 @@ const validateImg = (req, res, next) => {
 	}
 	// the img ext is accepted rename it
 	fs.renameSync(tmpPath, newPath);
-	req.body.img = imgPath;
+	req.body.img = MY_URL + imgPath;
 	next();
 };
 
@@ -90,7 +90,7 @@ const validatePost = (req, res, next) => {
 		}
 		// the img ext is accepted rename it
 		fs.renameSync(tmpPath, newPath);
-		req.body.img = imgPath;
+		req.body.img = MY_URL + imgPath;
 	}
 
 	next();
