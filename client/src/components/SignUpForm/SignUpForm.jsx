@@ -1,5 +1,6 @@
 import './SignUpForm.css';
 import { useState, useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 import { userContext } from '../../context/UserContext';
 import { register } from '../../api/authApi';
 import Alarm from '../Alarm/Alarm';
@@ -10,6 +11,7 @@ export default function SignUpForm({ setShow }) {
 	const [email, setEmail] = useState('');
 	const [password2, setPassword2] = useState('');
 	const [error, setError] = useState(null);
+    const history = useHistory();
 
 	const { setUser } = useContext(userContext);
 

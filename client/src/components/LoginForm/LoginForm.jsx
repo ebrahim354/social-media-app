@@ -1,5 +1,6 @@
 import './LoginForm.css';
 import { useState  } from 'react';
+import { useHistory } from 'react-router-dom';
 import { login } from '../../api/authApi';
 import Alarm from '../Alarm/Alarm';
 
@@ -11,6 +12,7 @@ export default function LoginForm({ setShow }) {
 	const [usernameOrEmail, setUsernameOrEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState(null);
+    const history = useHistory();
 
 	const changeInput = (e, setter) => {
 		setter(e.target.value);
