@@ -33,7 +33,7 @@ challenge even harder.
 
 ## Quick Start
 
-The application is running on [social-media](www.google.com) if you would like to try it.
+The application is running on [social-media](https://social-media-client-sv4c.onrender.com/) if you would like to try it.
 There is an existing user with both the username and password "temp" you can login to it directly.
 Note that I'm using free tier deployment so the first login is going to take 1-2 minutes in order for the server
 to spin up ( They go down with low usage to save resouces ).
